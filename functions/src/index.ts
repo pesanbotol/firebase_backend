@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-// import {JobSchema} from "./schemas/IndexByGeoposSchema";
+import { BottleCreateDOISchema, BottleSchema } from "./schemas/BottleSchema";
+import { Bottle } from "./interfaces";
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -8,7 +9,7 @@ const db = admin.firestore();
 // // https://firebase.google.com/docs/functions/typescript
 
 export const helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", {structuredData: true});
+  functions.logger.info("Hello logs!", { structuredData: true });
   response.send("Hello from Firebase 3!");
 });
 
@@ -20,10 +21,33 @@ export const createProfile = functions.auth.user().onCreate((user) => {
   functions.logger.info("Eyooo");
 });
 
-// exports.addMessage = functions.https.onCall((data) => {
-//   const res = JobSchema.validate(data);
-//   return res;
-// });
+/**
+ * Create a new bottled message, either image or text
+ * add addtional metadata and save it to database
+ * 
+ * @param data check on BottleCreateDOI
+ */
+export const createBottle = functions.https.onCall((data, ctx) => {
+  if (!ctx.auth) throw new functions.https.HttpsError("unauthenticated", "only authenticated user can create message");
+
+  const { error: errorIn, value: dataIn } = BottleCreateDOISchema.validate(data);
+  if (errorIn) throw new functions.https.HttpsError("invalid-argument", "Data supplied isn't in the correct shape", errorIn)
+
+  const currentTimeUTC = new Date();
+  const uid = ctx.auth!.uid;
+
+  // Merge user generated data with additional metadata
+  const toCreate: Bottle = {
+    ...dataIn!,
+    created_at: currentTimeUTC,
+    uid
+  }
+
+  const {error: errorTobeOut, value: dataTobeOut } = BottleSchema.validate(toCreate);
+  if (errorTobeOut) throw new functions.https.HttpsError("unknown", "can't create the bottle due to internal unknown error", errorIn)
+
+  return { x: { errorTobeOut, dataTobeOut } };
+});
 
 export const deleteProfile = functions.auth.user().onDelete((user) => {
   // const currentTime = Date.now();

@@ -1,8 +1,0 @@
-{
-  "devDependencies": {
-    "joi-to-typescript": "^4.0.1"
-  },
-  "dependencies": {
-    "joi": "^17.6.0"
-  }
-}
