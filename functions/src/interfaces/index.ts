@@ -3,5 +3,5 @@
  * Do not modify this file manually
  */
 
-export * from './Bottle';
-export * from './IndexDOI';
+export * from './Bottle'
+export * from './IndexDOI'
