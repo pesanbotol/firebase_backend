@@ -2,6 +2,7 @@
   "name": "functions",
   "scripts": {
     "lint": "ts-standard",
+    "lintfix": "ts-standard --fix",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",

@@ -27,7 +27,7 @@ export const BottleCreateDOISchema =
  * Todo: created_at masih tipenya `Date`, firebase pake `Timestamp`
  */
 export const BottleSchema = Joi.object<Bottle>({
-  created_at: Joi.date().required(),
+  createdAt: Joi.date().required(),
   uid: Joi.string().required(),
   ..._baseBottleSchema
 }).meta({ className: 'Bottle' })

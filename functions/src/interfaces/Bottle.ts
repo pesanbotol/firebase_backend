@@ -5,7 +5,7 @@
 
 export interface Bottle {
   content?: string
-  created_at: Date
+  createdAt: Date
   geo: {
     lat: number
     lng: number

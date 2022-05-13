@@ -20,7 +20,7 @@ export const createBottle = functions.https.onCall((data, ctx) => {
   // Merge user generated data with additional metadata
   const toCreate: Bottle = {
     ...dataIn,
-    created_at: currentTimeUTC,
+    createdAt: currentTimeUTC,
     uid
   }
 

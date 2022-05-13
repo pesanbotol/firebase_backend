@@ -3,5 +3,27 @@
  * Do not modify this file manually
  */
 
-export * from './Bottle'
-export * from './IndexDOI'
+export interface Bottle {
+  content?: string
+  createdAt: Date
+  geo: {
+    lat: number
+    lng: number
+  }
+  kind?: 'text'
+  uid: string
+}
+
+export interface BottleCreateDOI {
+  content?: string
+  geo: {
+    lat: number
+    lng: number
+  }
+  kind?: 'text'
+}
+
+export interface IndexByGeoposDOISchema {
+  lat: number
+  lng: number
+}
