@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
-import {Bottle} from '../interfaces'
-import {BottleCreateDOISchema, BottleSchema} from '../schemas/BottleSchema'
+import { Bottle } from '../interfaces'
+import { BottleCreateDOISchema, BottleSchema } from '../schemas/BottleSchema'
 
 /**
  * Create a new bottled message, either image or text
@@ -8,7 +8,7 @@ import {BottleCreateDOISchema, BottleSchema} from '../schemas/BottleSchema'
  *
  * @param data check on BottleCreateDOI
  */
- export const createBottle = functions.https.onCall((data, ctx) => {
+export const createBottle = functions.https.onCall((data, ctx) => {
   if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can create message')
 
   const { error: errorIn, value: dataIn } = BottleCreateDOISchema.validate(data)
