@@ -3,10 +3,6 @@ import { Bottle, BottleCreateDOI } from '../interfaces'
 
 const _baseBottleSchema = {
   kind: Joi.valid('text'),
-  geo: Joi.object({
-    lat: Joi.number().required(),
-    lng: Joi.number().required()
-  }).required(),
   /**
      * `content` boleh gak diisi misal ketika jenis konten adalah foto
      */
@@ -14,10 +10,19 @@ const _baseBottleSchema = {
 }
 
 /**
- * DOI untuk data yang diterima dari client
+ * DTO untuk data yang diterima dari client
+ * bentuk geo yang diterima berupa object {lat, lng}
+ * beda dengan yang disimpan di Firestore sebagai
+ * Geoposition, dan di Typesense yang pake array [lat, lng]
  */
 export const BottleCreateDOISchema =
-  Joi.object<BottleCreateDOI>(_baseBottleSchema)
+  Joi.object<BottleCreateDOI>({
+    geo: Joi.object({
+      lat: Joi.number().required(),
+      lng: Joi.number().required()
+    }).required(),
+    ..._baseBottleSchema
+  })
     .meta({ className: 'BottleCreateDOI' })
 
 /**
@@ -29,5 +34,6 @@ export const BottleCreateDOISchema =
 export const BottleSchema = Joi.object<Bottle>({
   createdAt: Joi.date().required(),
   uid: Joi.string().required(),
+  geo: Joi.array().length(2),
   ..._baseBottleSchema
 }).meta({ className: 'Bottle' })
