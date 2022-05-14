@@ -4,21 +4,21 @@
  */
 
 export interface Bottle {
-  content?: string;
-  createdAt: Date;
+  content?: string
+  createdAt: Date
   geo: {
-    lat: number;
-    lng: number;
-  };
-  kind?: 'text';
-  uid: string;
+    lat: number
+    lng: number
+  }
+  kind?: 'text'
+  uid: string
 }
 
 export interface BottleCreateDOI {
-  content?: string;
+  content?: string
   geo: {
-    lat: number;
-    lng: number;
-  };
-  kind?: 'text';
+    lat: number
+    lng: number
+  }
+  kind?: 'text'
 }

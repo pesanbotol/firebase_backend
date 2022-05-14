@@ -4,6 +4,6 @@
  */
 
 export interface IndexByGeoposDOISchema {
-  lat: number;
-  lng: number;
+  lat: number
+  lng: number
 }

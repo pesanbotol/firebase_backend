@@ -19,9 +19,12 @@
   "dependencies": {
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
-    "joi": "^17.6.0"
+    "flat": "^5.0.2",
+    "joi": "^17.6.0",
+    "typesense": "^1.2.2"
   },
   "devDependencies": {
+    "@types/flat": "^5.0.2",
     "firebase-functions-test": "^0.2.0",
     "joi-to-typescript": "^4.0.1",
     "ts-node": "^10.7.0",
