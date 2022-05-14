@@ -4,7 +4,6 @@ import * as admin from 'firebase-admin'
 import * as authTrigger from './auth/auth-trigger'
 import * as callableBottle from './bottle/callable-bottle'
 import * as callableSeeder from './seeder/index'
-// import * as typesenseTrigger from './typesense/backfillToTypesenseFromFirestore'
 import { onFirestoreTriggerBackfillIndex } from './typesense/backfillToTypesenseFromFirestore'
 import { onWriteUpdateTypesenseIndex } from './typesense/indexToTypesenseOnFirestoreWrite'
 
