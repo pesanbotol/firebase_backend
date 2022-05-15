@@ -3,7 +3,7 @@
  * Do not modify this file manually
  */
 
-export interface IndexByGeoposDOISchema {
+export interface IndexByGeoposDTO {
   lat: number;
   lng: number;
 }

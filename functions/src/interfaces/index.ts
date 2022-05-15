@@ -4,23 +4,86 @@
  */
 
 export interface Bottle {
-  content?: string;
+  autoTags?: string[];
+  /**
+   * Auto aggregated number of comments received for this post (Including filtered, spam etc)
+   */
+  commentCount?: number;
+  contentText?: string;
   createdAt: Date;
+  flags?: string[];
+  /**
+   * Unified typesense, firestore, and client geoposition data type, [lat, lng]
+   */
   geo?: any[];
   kind?: 'text';
+  /**
+   * Last time someone commented on this post, used for relevance
+   */
+  lastCommentAt?: Date;
+  /**
+   * Last time someone like this post, used for relevance
+   */
+  lastLikeAt?: Date;
+  /**
+   * Last time someone either like or commented on this post, for easier relevance scoring
+   */
+  lastSignalAt?: Date;
+  likeCount?: number;
+  mentions?: string[];
+  tags?: string[];
   uid: string;
 }
 
-export interface BottleCreateDOI {
-  content?: string;
-  geo: {
-    lat: number;
-    lng: number;
-  };
+/**
+ * Schema for creating a new post, sent from client
+ */
+export interface BottleCreateDTO {
+  contentText?: string;
+  /**
+   * Unified typesense, firestore, and client geoposition data type, [lat, lng]
+   */
+  geo?: any[];
   kind?: 'text';
 }
 
-export interface IndexByGeoposDOISchema {
+/**
+ * Schema for validating post received by client from server, this adds personalized relevance score
+ */
+export interface BottleGetDTO {
+  autoTags?: string[];
+  /**
+   * Auto aggregated number of comments received for this post (Including filtered, spam etc)
+   */
+  commentCount?: number;
+  contentText?: string;
+  createdAt: Date;
+  flags?: string[];
+  /**
+   * Unified typesense, firestore, and client geoposition data type, [lat, lng]
+   */
+  geo?: any[];
+  kind?: 'text';
+  /**
+   * Last time someone commented on this post, used for relevance
+   */
+  lastCommentAt?: Date;
+  /**
+   * Last time someone like this post, used for relevance
+   */
+  lastLikeAt?: Date;
+  /**
+   * Last time someone either like or commented on this post, for easier relevance scoring
+   */
+  lastSignalAt?: Date;
+  likeCount?: number;
+  mentions?: string[];
+  relevanceScore?: number;
+  tags?: string[];
+  uid: string;
+}
+
+export interface IndexByGeoposDTO {
   lat: number;
   lng: number;
 }
