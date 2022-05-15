@@ -4,8 +4,8 @@
  */
 
 export interface UserProfile {
-  description?: string
-  displayName?: string
-  registeredAt: Date
-  username?: string
+  description?: string;
+  displayName?: string;
+  registeredAt: Date;
+  username?: string;
 }

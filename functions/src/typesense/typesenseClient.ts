@@ -1,5 +1,5 @@
 import Typesense from 'typesense'
-import {TypesenseConfig as config} from './config'
+import { TypesenseConfig as config } from './config'
 
 export const typeClient = new Typesense.Client({
   nodes: config.typesenseHosts.map((h: string) => {

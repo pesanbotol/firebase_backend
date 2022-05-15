@@ -1,12 +1,12 @@
 interface TypesenseConfigInterface {
-  firestoreCollectionPath: string,
-  firestoreCollectionFields: string[],
-  typesenseHosts: string[],
-  typesensePort: number,
-  typesenseProtocol: string,
-  typesenseCollectionName: string,
-  typesenseAPIKey: string,
-  typesenseBackfillTriggerDocumentInFirestore: string,
+  firestoreCollectionPath: string
+  firestoreCollectionFields: string[]
+  typesenseHosts: string[]
+  typesensePort: number
+  typesenseProtocol: string
+  typesenseCollectionName: string
+  typesenseAPIKey: string
+  typesenseBackfillTriggerDocumentInFirestore: string
   typesenseBackfillBatchSize: number
 }
 

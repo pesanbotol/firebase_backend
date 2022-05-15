@@ -1,6 +1,6 @@
-import {DocumentSnapshot} from "firebase-functions/v1/firestore"
+import { DocumentSnapshot } from 'firebase-functions/v1/firestore'
 
-import {TypesenseConfig as config} from './config'
+import { TypesenseConfig as config } from './config'
 import * as admin from 'firebase-admin'
 import * as flat from 'flat'
 
@@ -35,13 +35,13 @@ export const typesenseDocumentFromSnapshot = (
 
   let entries = Object.entries(data!)
 
-  if (fieldsToExtract.length) {
+  if (fieldsToExtract.length > 0) {
     entries = entries.filter(([key]) => fieldsToExtract.includes(key))
   }
 
   // using flat to flatten nested objects
   // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
-  const typesenseDocument : any = flat(
+  const typesenseDocument: any = flat(
     Object.fromEntries(entries.map(([key, value]) => [key, mapValue(value)])),
     { safe: true }
   )

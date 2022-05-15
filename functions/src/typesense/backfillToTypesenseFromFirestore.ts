@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import {TypesenseConfig as config} from './config'
-import {DocumentSnapshot} from 'firebase-functions/v1/firestore'
+import { TypesenseConfig as config } from './config'
+import { DocumentSnapshot } from 'firebase-functions/v1/firestore'
 import * as utils from './utils'
-import {typeClient} from './typesenseClient'
+import { typeClient } from './typesenseClient'
 
 const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>) => {
   if (![true, 'true'].includes(snapshot.after.get('trigger'))) {
@@ -17,7 +17,7 @@ const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>) => {
 
 export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.document
   .onWrite(async (snapshot, context) => {
-    functions.logger.log("eeeee");
+    functions.logger.log('eeeee')
 
     functions.logger.info('Backfilling ' +
       `${config.firestoreCollectionFields.join(',')} fields in Firestore documents ` +
@@ -30,7 +30,7 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
     }
 
     const querySnapshot =
-      await admin.firestore().collection(config.firestoreCollectionPath!).get()
+      await admin.firestore().collection(config.firestoreCollectionPath).get()
     let currentDocumentNumber = 0
     let currentDocumentsBatch: any[] = []
 
@@ -41,7 +41,7 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
       if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
         try {
           await typeClient
-            .collections(encodeURIComponent(config.typesenseCollectionName!))
+            .collections(encodeURIComponent(config.typesenseCollectionName))
             .documents()
             .import(currentDocumentsBatch)
           currentDocumentsBatch = []
@@ -54,7 +54,7 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
     if (currentDocumentsBatch.length > 0) {
       try {
         await typeClient
-          .collections(encodeURIComponent(config.typesenseCollectionName!))
+          .collections(encodeURIComponent(config.typesenseCollectionName))
           .documents()
           .import(currentDocumentsBatch)
         functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`)
@@ -66,4 +66,3 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
     functions.logger.info('Done backfilling to Typesense from Firestore')
     return;
   })
-
