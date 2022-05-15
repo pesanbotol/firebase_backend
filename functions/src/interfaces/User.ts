@@ -4,8 +4,15 @@
  */
 
 export interface UserProfile {
+  commentCount: number;
   description?: string;
   displayName?: string;
+  follows?: any[];
+  likeCount: number;
+  postCount: number;
+  recvCommentCount: number;
+  recvFollows?: any[];
+  recvLikeCount: number;
   registeredAt: Date;
   username?: string;
 }
