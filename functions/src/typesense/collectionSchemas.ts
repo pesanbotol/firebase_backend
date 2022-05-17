@@ -6,7 +6,8 @@ export const createUsersCollections = functions.https.onRequest(async (request, 
   const schema: CollectionCreateSchema = {
     name: 'users',
     fields: [
-      { name: 'description', type: 'string' }
+      { name: 'description', type: 'string' },
+      { name: 'username', type: 'string' },
     ]
     // 'default_sorting_field': 'ratings_count'
   }

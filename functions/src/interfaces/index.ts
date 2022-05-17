@@ -105,3 +105,8 @@ export interface IndexByGeoposDTO {
   lat: number;
   lng: number;
 }
+
+export interface SearchReqDTO {
+  q: string;
+  searchKind: 'all' | 'user' | 'post';
+}
