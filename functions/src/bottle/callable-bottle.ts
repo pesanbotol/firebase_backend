@@ -2,6 +2,8 @@ import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import { Bottle } from '../interfaces'
 import { BottleSchema, BottleCreateReqDTOSchema, BottleGetResDTOSchema } from '../schemas/BottleSchema'
+import {IndexByGeocordReqDTOSchema} from '../schemas'
+import {typeClient} from '../typesense'
 
 /**
  * Create a new bottled message, either image or text
@@ -42,4 +44,27 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   return {
     data: dataRes,
   };
+})
+
+export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => {
+  if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can list message')
+
+  const { error: errorIn, value: dataIn } = IndexByGeocordReqDTOSchema.validate(data)
+  if (errorIn != null) throw new functions.https.HttpsError('invalid-argument', "Data supplied isn't in the correct shape", errorIn)
+
+  functions.logger.info(dataIn)
+
+const postRes = await typeClient.collections('bottles').documents().search({
+    q: '',
+    query_by: 'contentText',
+  });
+  const postHit = postRes.hits ?? [];
+
+  return {
+    data: {
+      bottle: postHit.map((it) => it.document),
+      trend: [],
+      bottleRecommended: [],
+    }
+  }
 })
