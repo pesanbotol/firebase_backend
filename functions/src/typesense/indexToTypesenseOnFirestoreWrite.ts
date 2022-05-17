@@ -1,33 +1,37 @@
 import * as functions from 'firebase-functions'
-import { TypesenseConfig as config } from './config'
-import { typeClient } from './typesenseClient'
+import {typeClient} from './typesenseClient'
 import * as utils from './utils'
 
-export const onWriteUpdateTypesenseIndex = functions.firestore.document('users/{userId}')
-  .onWrite(async (snapshot, context) => {
-    if (snapshot.before.data() == null) {
-      // Create
-      const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after)
-      functions.logger.debug(`Creating document ${JSON.stringify(typesenseDocument)}`)
-      return await typeClient
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .create(typesenseDocument)
-    } else if (snapshot.after.data() == null) {
-      // Delete
-      const documentId = snapshot.before.id
-      functions.logger.debug(`Deleting document ${documentId}`)
-      return await typeClient
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents(documentId)
-        .delete()
-    } else {
-      // Update
-      const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after)
-      functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`)
-      return await typeClient
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .upsert(typesenseDocument)
-    }
-  })
+const _higherOrderIndexer = (collectionName: string) => async (snapshot: functions.Change<functions.firestore.DocumentSnapshot>, context: functions.EventContext) => {
+  if (snapshot.before.data() == null) {
+    // Create
+    const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after)
+    functions.logger.info(`Creating ${collectionName} document ${JSON.stringify(typesenseDocument)}`)
+    return await typeClient
+      .collections(encodeURIComponent(collectionName))
+      .documents()
+      .create(typesenseDocument)
+  } else if (snapshot.after.data() == null) {
+    // Delete
+    const documentId = snapshot.before.id
+    functions.logger.info(`Deleting ${collectionName} document ${documentId}`)
+    return await typeClient
+      .collections(encodeURIComponent(collectionName))
+      .documents(documentId)
+      .delete()
+  } else {
+    // Update
+    const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after)
+    functions.logger.info(`Upserting ${collectionName} document ${JSON.stringify(typesenseDocument)}`)
+    return await typeClient
+      .collections(encodeURIComponent(collectionName))
+      .documents()
+      .upsert(typesenseDocument)
+  }
+}
+
+export const onWriteUsersUpdateTypesenseIndex = functions.firestore.document('users/{userId}')
+  .onWrite(_higherOrderIndexer('users'))
+
+export const onWriteBottlesUpdateTypesenseIndex = functions.firestore.document('bottles/{bottleId}')
+  .onWrite(_higherOrderIndexer('bottles'))
