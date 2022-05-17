@@ -10,9 +10,11 @@ import * as typesenseCollectionsTrigger from './typesense/collectionSchemas'
 
 admin.initializeApp()
 
-export const helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info('Hello logs!', { structuredData: true, env: process.env })
-  response.send('Hello from Firebase 3! ')
+export const helloWorld = functions.https.onCall((data, context) => {
+  functions.logger.info('I am healthy')
+  return {
+    ok: true
+  }
 })
 
 export const authTrigger = authsTrigger

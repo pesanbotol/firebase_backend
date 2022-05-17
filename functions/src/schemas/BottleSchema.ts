@@ -1,5 +1,5 @@
 import * as Joi from 'joi'
-import { Bottle, BottleGetDTO } from '../interfaces'
+import { Bottle, BottleCreateReqDTO, BottleGetResDTO } from '../interfaces'
 
 // #region SHARED SCHEMA FOR BOTTLE POST
 const _geoSchema = Joi.array().length(2).ordered(
@@ -57,24 +57,24 @@ const _serverSuppliedBottleDataSchema = {
  * beda dengan yang disimpan di Firestore sebagai
  * Geoposition, dan di Typesense yang pake array [lat, lng]
  */
-export const BottleCreateDTOSchema =
-  Joi.object({
+export const BottleCreateReqDTOSchema =
+  Joi.object<BottleCreateReqDTO>({
     ..._userSuppliedBottleDataSchema
   })
-    .meta({ className: 'BottleCreateDTO' })
+    .meta({ className: 'BottleCreateReqDTO' })
     .description('Schema for creating a new post, sent from client')
 
 /**
  * DTO untuk data yang dikirim server ke client
  * Server -> Client data validation
  */
-export const BottleGetDTOSchema = Joi.object<BottleGetDTO>({
+export const BottleGetResDTOSchema = Joi.object<BottleGetResDTO>({
   relevanceScore: Joi.number().optional(),
   ..._userSuppliedBottleDataSchema,
   ..._serverSuppliedBottleDataSchema,
   ..._userSuppliedBottleDataSchema
 })
-  .meta({ className: 'BottleGetDTO' })
+  .meta({ className: 'BottleGetResDTO' })
   .description('Schema for validating post received by client from server, this adds personalized relevance score')
 // #endregion
 

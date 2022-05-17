@@ -1,17 +1,19 @@
 import * as functions from 'firebase-functions'
+import * as admin from 'firebase-admin'
 import { Bottle } from '../interfaces'
-import { BottleSchema, BottleCreateDTOSchema } from '../schemas/BottleSchema'
+import { BottleSchema, BottleGetResDTOSchema, BottleCreateReqDTOSchema } from '../schemas/BottleSchema'
 
 /**
  * Create a new bottled message, either image or text
  * add addtional metadata and save it to database
  *
- * @param data check on BottleCreateDOI
+ * @param data check on BottleCreateReqDTO
+ * @returns BottleGetResDTO
  */
-export const createBottle = functions.https.onCall((data, ctx) => {
+export const createBottle = functions.https.onCall(async (data, ctx) => {
   if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can create message')
 
-  const { error: errorIn, value: dataIn } = BottleCreateDTOSchema.validate(data)
+  const { error: errorIn, value: dataIn } = BottleCreateReqDTOSchema.validate(data)
   if (errorIn != null) throw new functions.https.HttpsError('invalid-argument', "Data supplied isn't in the correct shape", errorIn)
 
   const currentTimeUTC = new Date()
@@ -27,5 +29,18 @@ export const createBottle = functions.https.onCall((data, ctx) => {
   const { error: errorTobeOut, value: dataTobeOut } = BottleSchema.validate(toCreate)
   if (errorTobeOut != null) throw new functions.https.HttpsError('unknown', "can't create the bottle due to internal unknown error", errorIn)
 
-  return { x: { errorTobeOut, dataTobeOut } }
+  const db = admin.firestore()
+  const res = await db.collection('bottles').add(dataTobeOut);
+  const createdDoc = (await res.get()).data()
+
+  const {error: errorRes, value: dataRes} = BottleGetResDTOSchema.validate(createdDoc)
+  if (errorRes) {
+    functions.logger.warn('createBottle', errorRes, dataRes)
+  }
+
+  functions.logger.info(admin.firestore.FieldValue.serverTimestamp())
+
+  return {
+    data: dataRes,
+  };
 })
