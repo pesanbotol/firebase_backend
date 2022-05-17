@@ -2,7 +2,7 @@ clearport:
 	npx kill-port 9099 5001 8190 8103 9199
 
 emulate:
-	firebase emulators:start
+	firebase emulators:start --import ./emulator-temp --export-on-exit
 
 s:
 	make clearport && make emulate

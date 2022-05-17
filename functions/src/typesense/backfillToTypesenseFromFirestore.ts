@@ -15,9 +15,8 @@ const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>): bool
   return true
 }
 
-export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.document
+export const onFirestoreTriggerBackfillIndex = functions.firestore.document(config.typesenseBackfillTriggerDocumentInFirestore)
   .onWrite(async (snapshot) => {
-
     for (const collectionName in typesenseCollections) {
       const schema = typesenseCollections[collectionName]
 
@@ -35,12 +34,17 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
       const querySnapshot: admin.firestore.QuerySnapshot<admin.firestore.DocumentData> =
         await admin.firestore().collection(collectionName).get()
 
+      console.log("something something: " + querySnapshot.docs.length);
+      
+
       let currentDocumentNumber = 0
       let currentDocumentsBatch: any[] = []
 
       for (const firestoreDocument of querySnapshot.docs) {
         currentDocumentNumber += 1
         currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument, fieldsToExtractForCollection(collectionName)))
+        console.log('entah entah', firestoreDocument, currentDocumentsBatch);
+        
 
         if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
           try {
@@ -54,7 +58,6 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
             functions.logger.error('Import error', error)
           }
         }
-        return
       }
 
       if (currentDocumentsBatch.length > 0) {
