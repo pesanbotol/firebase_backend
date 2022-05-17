@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
-import * as admin from 'firebase-admin'
-import {UserProfile} from '../interfaces/User'
-import {UserProfileSchema} from '../schemas/UserSchema'
+// import * as admin from 'firebase-admin'
+// import { UserProfile } from '../interfaces/User'
+// import { UserProfileSchema } from '../schemas/UserSchema'
 
 /**
  * Seed profile in `firestore`
@@ -25,7 +25,7 @@ export const seedProfile = functions.https.onCall((data, ctx) => {
   // if (error) {
   //   // ada error
   //   console.log(error);
-    
+
   // }
   // void db.collection('users').doc('iejhufvghi13ew').set(user)
 

@@ -30,9 +30,10 @@ const mapValue: any = (value: any) => {
 export const typesenseDocumentFromSnapshot = (
   firestoreDocumentSnapshot: DocumentSnapshot,
   fieldsToExtract = config.firestoreCollectionFields
-) => {
+): any => {
   const data = firestoreDocumentSnapshot.data()
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   let entries = Object.entries(data!)
 
   if (fieldsToExtract.length > 0) {

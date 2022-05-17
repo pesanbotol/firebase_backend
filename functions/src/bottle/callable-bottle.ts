@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 import { Bottle } from '../interfaces'
-import { BottleCreateDOISchema, BottleSchema } from '../schemas/BottleSchema'
+import { BottleSchema, BottleCreateDTOSchema } from '../schemas/BottleSchema'
 
 /**
  * Create a new bottled message, either image or text
@@ -11,7 +11,7 @@ import { BottleCreateDOISchema, BottleSchema } from '../schemas/BottleSchema'
 export const createBottle = functions.https.onCall((data, ctx) => {
   if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can create message')
 
-  const { error: errorIn, value: dataIn } = BottleCreateDOISchema.validate(data)
+  const { error: errorIn, value: dataIn } = BottleCreateDTOSchema.validate(data)
   if (errorIn != null) throw new functions.https.HttpsError('invalid-argument', "Data supplied isn't in the correct shape", errorIn)
 
   const currentTimeUTC = new Date()

@@ -5,7 +5,7 @@ import { DocumentSnapshot } from 'firebase-functions/v1/firestore'
 import * as utils from './utils'
 import { typeClient } from './typesenseClient'
 
-const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>) => {
+const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>): boolean => {
   if (![true, 'true'].includes(snapshot.after.get('trigger'))) {
     functions.logger.error(
       'Skipping backfill. `trigger: true` key ' +
@@ -16,7 +16,7 @@ const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>) => {
 }
 
 export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.document
-  .onWrite(async (snapshot, context) => {
+  .onWrite(async (snapshot) => {
     functions.logger.log('eeeee')
 
     functions.logger.info('Backfilling ' +
@@ -29,12 +29,12 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
       return false
     }
 
-    const querySnapshot =
+    const querySnapshot: admin.firestore.QuerySnapshot<admin.firestore.DocumentData> =
       await admin.firestore().collection(config.firestoreCollectionPath).get()
     let currentDocumentNumber = 0
     let currentDocumentsBatch: any[] = []
 
-    querySnapshot.forEach(async (firestoreDocument) => {
+    for (const firestoreDocument of querySnapshot.docs) {
       currentDocumentNumber += 1
       currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument))
 
@@ -50,7 +50,9 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
           functions.logger.error('Import error', error)
         }
       }
-    })
+      return
+    }
+
     if (currentDocumentsBatch.length > 0) {
       try {
         await typeClient
@@ -64,5 +66,5 @@ export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.docum
     }
 
     functions.logger.info('Done backfilling to Typesense from Firestore')
-    return;
+    return
   })

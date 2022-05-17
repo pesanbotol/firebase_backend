@@ -1,12 +1,11 @@
 import * as Joi from 'joi'
-import {Bottle, BottleGetDTO} from '../interfaces'
+import { Bottle, BottleGetDTO } from '../interfaces'
 
-
-//#region SHARED SCHEMA FOR BOTTLE POST
+// #region SHARED SCHEMA FOR BOTTLE POST
 const _geoSchema = Joi.array().length(2).ordered(
-  Joi.number().min(-90).max(90).required().description("Lat is from -90.0 to +90.0 degree"),
-  Joi.number().min(-180).max(180).required().description("Longitude is from -180.0 to +180.0 degree"),
-).description("Unified typesense, firestore, and client geoposition data type, [lat, lng]")
+  Joi.number().min(-90).max(90).required().description('Lat is from -90.0 to +90.0 degree'),
+  Joi.number().min(-180).max(180).required().description('Longitude is from -180.0 to +180.0 degree')
+).description('Unified typesense, firestore, and client geoposition data type, [lat, lng]')
 
 /**
  * Schema untuk data yang dikirim oleh user
@@ -18,7 +17,7 @@ const _userSuppliedBottleDataSchema = {
      * `content` boleh gak diisi misal ketika jenis konten adalah foto
      */
   contentText: Joi.string().min(1).max(255),
-  geo: _geoSchema,
+  geo: _geoSchema
 }
 
 /**
@@ -30,13 +29,13 @@ const _serverSuppliedBottleDataSchema = {
   createdAt: Joi.date().required(),
   uid: Joi.string().required(),
   likeCount: Joi.number(),
-  commentCount: Joi.number().description("Auto aggregated number of comments received for this post (Including filtered, spam etc)"),
+  commentCount: Joi.number().description('Auto aggregated number of comments received for this post (Including filtered, spam etc)'),
   /**
    * Signal
    */
-  lastLikeAt: Joi.date().optional().description("Last time someone like this post, used for relevance"),
-  lastCommentAt: Joi.date().optional().description("Last time someone commented on this post, used for relevance"),
-  lastSignalAt: Joi.date().optional().description("Last time someone either like or commented on this post, for easier relevance scoring"),
+  lastLikeAt: Joi.date().optional().description('Last time someone like this post, used for relevance'),
+  lastCommentAt: Joi.date().optional().description('Last time someone commented on this post, used for relevance'),
+  lastSignalAt: Joi.date().optional().description('Last time someone either like or commented on this post, for easier relevance scoring'),
   /**
    * Extracted from text, or somewhere idk
    */
@@ -46,11 +45,11 @@ const _serverSuppliedBottleDataSchema = {
    * ML filled
    */
   autoTags: Joi.array().items(Joi.string()), // Mirip kek tag, tapi ditambahin tag yang disarankan
-  flags: Joi.array().items(Joi.string()),
+  flags: Joi.array().items(Joi.string())
 }
-//#endregion
+// #endregion
 
-//#region DTO, android hanya lihat yang disini aja
+// #region DTO, android hanya lihat yang disini aja
 /**
  * DTO untuk data yang dikirim client
  * Client -> Server data validation
@@ -60,10 +59,10 @@ const _serverSuppliedBottleDataSchema = {
  */
 export const BottleCreateDTOSchema =
   Joi.object({
-    ..._userSuppliedBottleDataSchema,
+    ..._userSuppliedBottleDataSchema
   })
-    .meta({className: 'BottleCreateDTO'})
-    .description("Schema for creating a new post, sent from client")
+    .meta({ className: 'BottleCreateDTO' })
+    .description('Schema for creating a new post, sent from client')
 
 /**
  * DTO untuk data yang dikirim server ke client
@@ -75,9 +74,9 @@ export const BottleGetDTOSchema = Joi.object<BottleGetDTO>({
   ..._serverSuppliedBottleDataSchema,
   ..._userSuppliedBottleDataSchema
 })
-  .meta({className: 'BottleGetDTO'})
-  .description("Schema for validating post received by client from server, this adds personalized relevance score")
-//#endregion
+  .meta({ className: 'BottleGetDTO' })
+  .description('Schema for validating post received by client from server, this adds personalized relevance score')
+// #endregion
 
 /**
  * DOI untuk data yang disimpan di server (Firestore)
@@ -89,4 +88,4 @@ export const BottleGetDTOSchema = Joi.object<BottleGetDTO>({
 export const BottleSchema = Joi.object<Bottle>({
   ..._serverSuppliedBottleDataSchema,
   ..._userSuppliedBottleDataSchema
-}).meta({className: 'Bottle'})
+}).meta({ className: 'Bottle' })

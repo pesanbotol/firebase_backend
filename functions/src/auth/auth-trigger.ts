@@ -1,6 +1,9 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import { UserProfile } from '../interfaces/User'
+import { UserMetaAggegator, UserProfile } from '../interfaces/User'
+import { isUsernameTaken } from './utils'
+
+const _generateRandomNumericId = (): string => Math.floor(Math.random() * Math.floor(Math.random() * Date.now())).toString()
 
 /**
  * When a user deleted its account, its profile will also be deleted
@@ -17,14 +20,46 @@ export const deleteProfile = functions.auth.user().onDelete((user) => {
 /**
  * When a new user registered, create a profile account
  */
-export const createProfile = functions.auth.user().onCreate((user) => {
+export const createProfile = functions.auth.user().onCreate(async (user) => {
   const db = admin.firestore()
   const currentTime = new Date()
 
+  let proposalUid = _generateRandomNumericId()
+
+  // Generate random numeric id until a unique initial username found
+  while (true) {
+    if (await isUsernameTaken(proposalUid)) {
+      proposalUid = _generateRandomNumericId()
+    } else {
+      break
+    }
+  }
+
   const newProfile: UserProfile = {
     registeredAt: currentTime,
-    description: 'halo'
+    description: 'halo',
+    username: proposalUid
   }
-  void db.collection('users').doc(user.uid).set(newProfile)
-  functions.logger.info('Eyooo')
+
+  const newProfileAggregator: UserMetaAggegator = {
+    commentCount: 0,
+    likeCount: 0,
+    postCount: 0,
+    recvCommentCount: 0,
+    recvLikeCount: 0
+  }
+
+  const usernamesTaken = {
+    uid: user.uid
+  }
+
+  // void db.collection('users').doc(user.uid).set(newProfile)
+  await db.runTransaction(async (tr) => {
+    const userProfileRef = db.collection('users').doc(user.uid)
+    tr.set(userProfileRef, newProfile)
+    tr.create(userProfileRef.collection('meta').doc('aggregator'), newProfileAggregator)
+    tr.set(db.collection('usernames').doc(proposalUid), usernamesTaken)
+  })
+
+  functions.logger.info(`Created profile and aggregator for username (${proposalUid}) for user (${user.uid})`)
 })
