@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import { TypesenseConfig as config } from './config'
-import { DocumentSnapshot } from 'firebase-functions/v1/firestore'
+import {fieldsToExtractForCollection, typesenseCollections, TypesenseConfig as config} from './config'
+import {DocumentSnapshot} from 'firebase-functions/v1/firestore'
 import * as utils from './utils'
-import { typeClient } from './typesenseClient'
+import {typeClient} from './typesenseClient'
 
 const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>): boolean => {
   if (![true, 'true'].includes(snapshot.after.get('trigger'))) {
@@ -17,54 +17,60 @@ const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>): bool
 
 export const onFirestoreTriggerBackfillIndex = functions.handler.firestore.document
   .onWrite(async (snapshot) => {
-    functions.logger.log('eeeee')
 
-    functions.logger.info('Backfilling ' +
-      `${config.firestoreCollectionFields.join(',')} fields in Firestore documents ` +
-      `from ${config.firestoreCollectionPath} ` +
-      `into Typesense Collection ${config.typesenseCollectionName} ` +
-      `on ${config.typesenseHosts.join(',')}`)
+    for (const collectionName in typesenseCollections) {
+      const schema = typesenseCollections[collectionName]
 
-    if (!validateBackfillRun(snapshot)) {
-      return false
-    }
+      functions.logger.info('Backfilling ' +
+        `${schema.fields.map((it) => it.name).join(',')} fields in Firestore documents ` +
+        `from ${collectionName} ` +
+        `into Typesense Collection ${schema.name} ` +
+        `on ${config.typesenseHosts.join(',')}`)
 
-    const querySnapshot: admin.firestore.QuerySnapshot<admin.firestore.DocumentData> =
-      await admin.firestore().collection(config.firestoreCollectionPath).get()
-    let currentDocumentNumber = 0
-    let currentDocumentsBatch: any[] = []
+      if (!validateBackfillRun(snapshot)) {
+        return false
+      }
 
-    for (const firestoreDocument of querySnapshot.docs) {
-      currentDocumentNumber += 1
-      currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument))
+      // NOTE!: Disini diasumsikan bahwa nama collection di typesense sama dengan nama collection di firestore
+      const querySnapshot: admin.firestore.QuerySnapshot<admin.firestore.DocumentData> =
+        await admin.firestore().collection(collectionName).get()
 
-      if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
+      let currentDocumentNumber = 0
+      let currentDocumentsBatch: any[] = []
+
+      for (const firestoreDocument of querySnapshot.docs) {
+        currentDocumentNumber += 1
+        currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument, fieldsToExtractForCollection(collectionName)))
+
+        if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
+          try {
+            await typeClient
+              .collections(encodeURIComponent(collectionName))
+              .documents()
+              .import(currentDocumentsBatch)
+            currentDocumentsBatch = []
+            functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`)
+          } catch (error) {
+            functions.logger.error('Import error', error)
+          }
+        }
+        return
+      }
+
+      if (currentDocumentsBatch.length > 0) {
         try {
           await typeClient
-            .collections(encodeURIComponent(config.typesenseCollectionName))
+            .collections(encodeURIComponent(collectionName))
             .documents()
             .import(currentDocumentsBatch)
-          currentDocumentsBatch = []
           functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`)
         } catch (error) {
           functions.logger.error('Import error', error)
         }
       }
-      return
+
+      functions.logger.info('Done backfilling to Typesense from Firestore')
     }
 
-    if (currentDocumentsBatch.length > 0) {
-      try {
-        await typeClient
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .import(currentDocumentsBatch)
-        functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`)
-      } catch (error) {
-        functions.logger.error('Import error', error)
-      }
-    }
-
-    functions.logger.info('Done backfilling to Typesense from Firestore')
     return
   })

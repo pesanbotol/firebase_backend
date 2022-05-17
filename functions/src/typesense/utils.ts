@@ -1,6 +1,5 @@
 import { DocumentSnapshot } from 'firebase-functions/v1/firestore'
 
-import { TypesenseConfig as config } from './config'
 import * as admin from 'firebase-admin'
 import * as flat from 'flat'
 
@@ -29,7 +28,7 @@ const mapValue: any = (value: any) => {
  */
 export const typesenseDocumentFromSnapshot = (
   firestoreDocumentSnapshot: DocumentSnapshot,
-  fieldsToExtract = config.firestoreCollectionFields
+  fieldsToExtract: string[]
 ): any => {
   const data = firestoreDocumentSnapshot.data()
 

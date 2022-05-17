@@ -1,5 +1,7 @@
+import {CollectionCreateSchema} from "typesense/lib/Typesense/Collections"
+
 interface TypesenseConfigInterface {
-  firestoreCollectionPath: string
+  // firestoreCollectionPath: string
   // firestoreCollectionFields: string[]
   typesenseHosts: string[]
   typesensePort: number
@@ -10,8 +12,37 @@ interface TypesenseConfigInterface {
   typesenseBackfillBatchSize: number
 }
 
+export const typesenseCollections: Record<string, CollectionCreateSchema> = {
+  'users': {
+    name: 'users',
+    fields: [
+      {name: 'description', type: 'string', optional: true},
+      {name: 'username', type: 'string'},
+    ]
+    // 'default_sorting_field': 'ratings_count'
+  },
+  'bottles': {
+    name: 'bottles',
+    fields: [
+      {name: 'kind', type: 'string'},
+      {name: 'contentText', type: 'string', optional: true},
+      {name: 'geo', type: 'geopoint'}
+    ]
+    // 'default_sorting_field': 'ratings_count'
+  }
+}
+
+type collectionNameType = keyof typeof typesenseCollections;
+/**
+ * Utility untuk ngambil semua field as string[] dari collection
+ * @param collectionName nama collection
+ * @returns 
+ */
+export const fieldsToExtractForCollection = (collectionName: collectionNameType) => typesenseCollections[collectionName].fields.map(it => it.name);
+
+
 export const TypesenseConfig: TypesenseConfigInterface = {
-  firestoreCollectionPath: process.env.FIRESTORE_COLLECTION_PATH ?? 'users',
+  // firestoreCollectionPath: process.env.FIRESTORE_COLLECTION_PATH ?? 'users',
   // firestoreCollectionFields:
   //   (process.env.FIRESTORE_COLLECTION_FIELDS ?? 'username,description')
   //     .split(',')
