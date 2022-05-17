@@ -15,7 +15,7 @@ export const helloWorld = functions.https.onRequest((request, response) => {
   response.send('Hello from Firebase 3! ')
 })
 
-export const auth = authsTrigger
+export const authTrigger = authsTrigger
 export const bottle = {
   callableBottle
 }
