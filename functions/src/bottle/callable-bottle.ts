@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import { Bottle } from '../interfaces'
-import { BottleSchema, BottleGetResDTOSchema, BottleCreateReqDTOSchema } from '../schemas/BottleSchema'
+import { BottleSchema, BottleCreateReqDTOSchema, BottleGetResDTOSchema } from '../schemas/BottleSchema'
 
 /**
  * Create a new bottled message, either image or text
@@ -16,7 +16,8 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   const { error: errorIn, value: dataIn } = BottleCreateReqDTOSchema.validate(data)
   if (errorIn != null) throw new functions.https.HttpsError('invalid-argument', "Data supplied isn't in the correct shape", errorIn)
 
-  const currentTimeUTC = new Date()
+  const currentTimeUTC = admin.firestore.Timestamp.now()
+
   const uid = ctx.auth.uid
 
   // Merge user generated data with additional metadata
@@ -37,8 +38,6 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   if (errorRes) {
     functions.logger.warn('createBottle', errorRes, dataRes)
   }
-
-  functions.logger.info(admin.firestore.FieldValue.serverTimestamp())
 
   return {
     data: dataRes,

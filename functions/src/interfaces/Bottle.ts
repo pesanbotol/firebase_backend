@@ -10,7 +10,16 @@ export interface Bottle {
    */
   commentCount?: number;
   contentText?: string;
-  createdAt: Date;
+  /**
+   * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
+   */
+  createdAt: {
+    _nanoseconds?: number;
+    _seconds?: number;
+  } | {
+    nanoseconds?: number;
+    seconds?: number;
+  } | Date;
   flags?: string[];
   /**
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
@@ -57,7 +66,16 @@ export interface BottleGetResDTO {
    */
   commentCount?: number;
   contentText?: string;
-  createdAt: Date;
+  /**
+   * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
+   */
+  createdAt: {
+    _nanoseconds?: number;
+    _seconds?: number;
+  } | {
+    nanoseconds?: number;
+    seconds?: number;
+  } | Date;
   flags?: string[];
   /**
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]

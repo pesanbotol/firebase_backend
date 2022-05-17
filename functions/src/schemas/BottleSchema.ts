@@ -1,12 +1,8 @@
 import * as Joi from 'joi'
 import { Bottle, BottleCreateReqDTO, BottleGetResDTO } from '../interfaces'
+import {fbTimestampOrJsDateSchema, geoSchema} from './shared'
 
 // #region SHARED SCHEMA FOR BOTTLE POST
-const _geoSchema = Joi.array().length(2).ordered(
-  Joi.number().min(-90).max(90).required().description('Lat is from -90.0 to +90.0 degree'),
-  Joi.number().min(-180).max(180).required().description('Longitude is from -180.0 to +180.0 degree')
-).description('Unified typesense, firestore, and client geoposition data type, [lat, lng]')
-
 /**
  * Schema untuk data yang dikirim oleh user
  * Yang perlu dikirim dari client cuma secuil ini + Auth token
@@ -17,7 +13,7 @@ const _userSuppliedBottleDataSchema = {
      * `content` boleh gak diisi misal ketika jenis konten adalah foto
      */
   contentText: Joi.string().min(1).max(255),
-  geo: _geoSchema
+  geo: geoSchema
 }
 
 /**
@@ -26,7 +22,7 @@ const _userSuppliedBottleDataSchema = {
  * Note bahwa tidak ada kolom `relevance` disini karena itu personalized
  */
 const _serverSuppliedBottleDataSchema = {
-  createdAt: Joi.date().required(),
+  createdAt: fbTimestampOrJsDateSchema.required(),
   uid: Joi.string().required(),
   likeCount: Joi.number(),
   commentCount: Joi.number().description('Auto aggregated number of comments received for this post (Including filtered, spam etc)'),
