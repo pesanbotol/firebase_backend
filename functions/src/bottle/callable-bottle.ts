@@ -2,8 +2,8 @@ import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import { Bottle } from '../interfaces'
 import { BottleSchema, BottleCreateReqDTOSchema, BottleGetResDTOSchema } from '../schemas/BottleSchema'
-import {IndexByGeocordReqDTOSchema} from '../schemas'
-import {typeClient} from '../typesense'
+import { IndexByGeocordReqDTOSchema } from '../schemas'
+import { typeClient } from '../typesense'
 
 /**
  * Create a new bottled message, either image or text
@@ -33,17 +33,17 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   if (errorTobeOut != null) throw new functions.https.HttpsError('unknown', "can't create the bottle due to internal unknown error", errorIn)
 
   const db = admin.firestore()
-  const res = await db.collection('bottles').add(dataTobeOut);
+  const res = await db.collection('bottles').add(dataTobeOut)
   const createdDoc = (await res.get()).data()
 
-  const {error: errorRes, value: dataRes} = BottleGetResDTOSchema.validate(createdDoc)
-  if (errorRes) {
+  const { error: errorRes, value: dataRes } = BottleGetResDTOSchema.validate(createdDoc)
+  if (errorRes != null) {
     functions.logger.warn('createBottle', errorRes, dataRes)
   }
 
   return {
-    data: dataRes,
-  };
+    data: dataRes
+  }
 })
 
 export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => {
@@ -54,17 +54,17 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
 
   functions.logger.info(dataIn)
 
-const postRes = await typeClient.collections('bottles').documents().search({
+  const postRes = await typeClient.collections('bottles').documents().search({
     q: '',
-    query_by: 'contentText',
-  });
-  const postHit = postRes.hits ?? [];
+    query_by: 'contentText'
+  })
+  const postHit = postRes.hits ?? []
 
   return {
     data: {
       bottle: postHit.map((it) => it.document),
       trend: [],
-      bottleRecommended: [],
+      bottleRecommended: []
     }
   }
 })

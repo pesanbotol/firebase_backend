@@ -1,6 +1,6 @@
 import * as Joi from 'joi'
 import { Bottle, BottleCreateReqDTO, BottleGetResDTO } from '../interfaces'
-import {fbTimestampOrJsDateSchema, geoSchema} from './shared'
+import { fbTimestampOrJsDateSchema, geoSchema } from './shared'
 
 // #region SHARED SCHEMA FOR BOTTLE POST
 /**

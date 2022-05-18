@@ -1,4 +1,4 @@
-import {CollectionCreateSchema} from "typesense/lib/Typesense/Collections"
+import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections'
 
 interface TypesenseConfigInterface {
   // firestoreCollectionPath: string
@@ -13,33 +13,32 @@ interface TypesenseConfigInterface {
 }
 
 export const typesenseCollections: Record<string, CollectionCreateSchema> = {
-  'users': {
+  users: {
     name: 'users',
     fields: [
-      {name: 'description', type: 'string', optional: true},
-      {name: 'username', type: 'string'},
+      { name: 'description', type: 'string', optional: true },
+      { name: 'username', type: 'string' }
     ]
     // 'default_sorting_field': 'ratings_count'
   },
-  'bottles': {
+  bottles: {
     name: 'bottles',
     fields: [
-      {name: 'kind', type: 'string'},
-      {name: 'contentText', type: 'string', optional: true},
-      {name: 'geo', type: 'geopoint'}
+      { name: 'kind', type: 'string' },
+      { name: 'contentText', type: 'string', optional: true },
+      { name: 'geo', type: 'geopoint' }
     ]
     // 'default_sorting_field': 'ratings_count'
   }
 }
 
-type collectionNameType = keyof typeof typesenseCollections;
+type collectionNameType = keyof typeof typesenseCollections
 /**
  * Utility untuk ngambil semua field as string[] dari collection
  * @param collectionName nama collection
- * @returns 
+ * @returns
  */
-export const fieldsToExtractForCollection = (collectionName: collectionNameType) => typesenseCollections[collectionName].fields.map(it => it.name);
-
+export const fieldsToExtractForCollection = (collectionName: collectionNameType): string[] => typesenseCollections[collectionName].fields.map(it => it.name)
 
 export const TypesenseConfig: TypesenseConfigInterface = {
   // firestoreCollectionPath: process.env.FIRESTORE_COLLECTION_PATH ?? 'users',

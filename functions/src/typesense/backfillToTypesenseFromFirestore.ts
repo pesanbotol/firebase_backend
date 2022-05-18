@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import {fieldsToExtractForCollection, typesenseCollections, TypesenseConfig as config} from './config'
-import {DocumentSnapshot} from 'firebase-functions/v1/firestore'
+import { fieldsToExtractForCollection, typesenseCollections, TypesenseConfig as config } from './config'
+import { DocumentSnapshot } from 'firebase-functions/v1/firestore'
 import * as utils from './utils'
-import {typeClient} from './typesenseClient'
+import { typeClient } from './typesenseClient'
 
 const validateBackfillRun = (snapshot: functions.Change<DocumentSnapshot>): boolean => {
   if (![true, 'true'].includes(snapshot.after.get('trigger'))) {
@@ -34,8 +34,7 @@ export const onFirestoreTriggerBackfillIndex = functions.firestore.document(conf
       const querySnapshot: admin.firestore.QuerySnapshot<admin.firestore.DocumentData> =
         await admin.firestore().collection(collectionName).get()
 
-      console.log("something something: " + querySnapshot.docs.length);
-      
+      // console.log(`something something: ${querySnapshot.docs.length}`)
 
       let currentDocumentNumber = 0
       let currentDocumentsBatch: any[] = []
@@ -43,8 +42,7 @@ export const onFirestoreTriggerBackfillIndex = functions.firestore.document(conf
       for (const firestoreDocument of querySnapshot.docs) {
         currentDocumentNumber += 1
         currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument, fieldsToExtractForCollection(collectionName)))
-        console.log('entah entah', firestoreDocument, currentDocumentsBatch);
-        
+        console.log('entah entah', firestoreDocument, currentDocumentsBatch)
 
         if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
           try {
@@ -74,6 +72,4 @@ export const onFirestoreTriggerBackfillIndex = functions.firestore.document(conf
 
       functions.logger.info('Done backfilling to Typesense from Firestore')
     }
-
-    return
   })

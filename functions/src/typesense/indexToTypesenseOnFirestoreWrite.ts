@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
-import {fieldsToExtractForCollection} from './config'
-import {typeClient} from './typesenseClient'
+import { fieldsToExtractForCollection } from './config'
+import { typeClient } from './typesenseClient'
 import * as utils from './utils'
 
 const _higherOrderIndexer = (collectionName: string) => async (snapshot: functions.Change<functions.firestore.DocumentSnapshot>, context: functions.EventContext) => {
