@@ -23,7 +23,7 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   const storage = admin.storage()
 
   /** Moving files uploaded from user uploaded dir to a secured dir */
-  let _movedImagePath: string | undefined = undefined;
+  let _movedImagePath: string | undefined;
   if (dataIn.contentImagePath) {
     const fullFilePath = `/userupload/${ctx.auth.uid}/${dataIn.contentImagePath}`
     const fileNameWExt = dataIn.contentImagePath;
@@ -45,11 +45,14 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   // Remove `contentImagePath` since we no longer use it
   const {contentImagePath, ...removedUnnecessaryUserSuppliedData} = dataIn
 
-  const toCreate: Bottle = {
+  // TODO: Use better js syntax, undefined
+  let toCreate: Bottle = {
     ...removedUnnecessaryUserSuppliedData,
-    _contentImagePath: _movedImagePath,
     createdAt: currentTimeUTC,
-    uid
+    uid,
+  }
+  if (_movedImagePath) {
+    toCreate._contentImagePath = _movedImagePath
   }
 
   const { error: errorTobeOut, value: dataTobeOut } = BottleSchema.validate(toCreate)
