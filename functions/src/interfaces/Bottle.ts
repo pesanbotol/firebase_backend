@@ -10,6 +10,7 @@ export interface Bottle {
    * Auto aggregated number of comments received for this post (Including filtered, spam etc)
    */
   commentCount?: number;
+  contentImageUrl?: string;
   contentText?: string;
   /**
    * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
@@ -63,12 +64,12 @@ export interface BottleCreateReqDTO {
  */
 export interface BottleGetResDTO {
   _contentImagePath?: string;
-  _contentImageUrl?: string;
   autoTags?: string[];
   /**
    * Auto aggregated number of comments received for this post (Including filtered, spam etc)
    */
   commentCount?: number;
+  contentImageUrl?: string;
   contentText?: string;
   /**
    * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)

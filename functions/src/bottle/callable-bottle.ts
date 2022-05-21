@@ -53,6 +53,7 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   }
   if (_movedImagePath) {
     toCreate._contentImagePath = _movedImagePath
+    toCreate.contentImageUrl = admin.storage().bucket().file(_movedImagePath).publicUrl()
   }
 
   const { error: errorTobeOut, value: dataTobeOut } = BottleSchema.validate(toCreate)
@@ -89,20 +90,7 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
 
   // TODO: Create a root level schema validation, don't validate bottle manually
   const results = {
-    bottle: postHit.map((it) => {
-      let _contentImageUrl: string | undefined = undefined;
-      if (it.document._contentImagePath) {
-        _contentImageUrl = admin.storage().bucket().file(it.document._contentImagePath).publicUrl();
-      }
-
-      // TODO: Consider moving public url to firestore document instead of reloading it each time
-      const oneBottle = {...it.document, _contentImageUrl}
-      const {error, value} = BottleGetResDTOSchema.validate(oneBottle)
-      if (error) {
-        functions.logger.error("a get result returned to user isn't in proper format", error)
-      }
-      return value
-    }),
+    bottle: postHit.map((it) => it.document),
     trend: [],
     bottleRecommended: []
   }

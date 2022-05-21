@@ -46,6 +46,7 @@ const _serverSuppliedBottleDataSchema = {
    * Media
    */
   _contentImagePath: Joi.string(),
+  contentImageUrl: Joi.string(),
 }
 // #endregion
 
@@ -71,7 +72,6 @@ export const BottleCreateReqDTOSchema =
  */
 export const BottleGetResDTOSchema = Joi.object<BottleGetResDTO>({
   relevanceScore: Joi.number().optional(),
-  _contentImageUrl: Joi.string(),
   ..._userSuppliedBottleDataSchema,
   ..._serverSuppliedBottleDataSchema,
   ..._userSuppliedBottleDataSchema
