@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import { Bottle } from '../interfaces'
+import { Bottle, BottleGetResDTO } from '../interfaces'
 import { BottleSchema, BottleCreateReqDTOSchema, BottleGetResDTOSchema } from '../schemas/BottleSchema'
 import { IndexByGeocordReqDTOSchema } from '../schemas'
 import { typeClient } from '../typesense'
@@ -20,11 +20,34 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
 
   const currentTimeUTC = admin.firestore.Timestamp.now()
 
+  const storage = admin.storage()
+
+  /** Moving files uploaded from user uploaded dir to a secured dir */
+  let _movedImagePath: string | undefined = undefined;
+  if (dataIn.contentImagePath) {
+    const fullFilePath = `/userupload/${ctx.auth.uid}/${dataIn.contentImagePath}`
+    const fileNameWExt = dataIn.contentImagePath;
+
+    // If a contentImagePath is provided, check if the path exists
+    if (!await storage.bucket().file(fullFilePath).exists()) {
+      // The file path doesn't exist
+      throw new functions.https.HttpsError('invalid-argument', "the contentImagePath you specified doesn't exist")
+    } else {
+      const dest = `mediafiles/${ctx.auth.uid}/${fileNameWExt}`
+      await storage.bucket().file(fullFilePath).move(dest)
+      _movedImagePath = dest
+    }
+  }
+
   const uid = ctx.auth.uid
 
   // Merge user generated data with additional metadata
+  // Remove `contentImagePath` since we no longer use it
+  const {contentImagePath, ...removedUnnecessaryUserSuppliedData} = dataIn
+
   const toCreate: Bottle = {
-    ...dataIn,
+    ...removedUnnecessaryUserSuppliedData,
+    _contentImagePath: _movedImagePath,
     createdAt: currentTimeUTC,
     uid
   }
@@ -54,17 +77,36 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
 
   functions.logger.info(dataIn)
 
-  const postRes = await typeClient.collections('bottles').documents().search({
+  const postRes = await typeClient.collections<BottleGetResDTO>('bottles').documents().search({
     q: '',
     query_by: 'contentText'
   })
   const postHit = postRes.hits ?? []
 
+
+  // TODO: Create a root level schema validation, don't validate bottle manually
+  const results = {
+    bottle: postHit.map((it) => {
+      let _contentImageUrl: string | undefined = undefined;
+      if (it.document._contentImagePath) {
+        _contentImageUrl = admin.storage().bucket().file(it.document._contentImagePath).publicUrl();
+      }
+
+      // TODO: Consider moving public url to firestore document instead of reloading it each time
+      const oneBottle = {...it.document, _contentImageUrl}
+      const {error, value} = BottleGetResDTOSchema.validate(oneBottle)
+      if (error) {
+        functions.logger.error("a get result returned to user isn't in proper format", error)
+      }
+      return value
+    }),
+    trend: [],
+    bottleRecommended: []
+  }
+
+  console.log("AA", JSON.stringify(results));
+
   return {
-    data: {
-      bottle: postHit.map((it) => it.document),
-      trend: [],
-      bottleRecommended: []
-    }
+    data: results
   }
 })

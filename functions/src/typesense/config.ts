@@ -26,6 +26,7 @@ export const typesenseCollections: Record<string, CollectionCreateSchema> = {
     fields: [
       { name: 'kind', type: 'string' },
       { name: 'contentText', type: 'string', optional: true },
+      { name: '_contentImagePath', type: 'string', optional: true },
       { name: 'geo', type: 'geopoint' }
     ]
     // 'default_sorting_field': 'ratings_count'
