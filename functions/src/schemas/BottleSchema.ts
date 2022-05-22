@@ -8,7 +8,7 @@ import { fbTimestampOrJsDateSchema, geoSchema } from './shared'
  * Yang perlu dikirim dari client cuma secuil ini + Auth token
  */
 const _userSuppliedBottleDataSchema = {
-  kind: Joi.valid('text'),
+  kind: Joi.valid('text', 'image', '360', 'short'),
   /**
      * `content` boleh gak diisi misal ketika jenis konten adalah foto
      */
