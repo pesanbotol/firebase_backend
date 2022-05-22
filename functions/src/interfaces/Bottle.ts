@@ -27,7 +27,7 @@ export interface Bottle {
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
    */
   geo?: any[];
-  kind?: 'text';
+  kind?: 'text' | 'image' | '360' | 'short';
   /**
    * Last time someone commented on this post, used for relevance
    */
@@ -56,7 +56,7 @@ export interface BottleCreateReqDTO {
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
    */
   geo?: any[];
-  kind?: 'text';
+  kind?: 'text' | 'image' | '360' | 'short';
 }
 
 /**
@@ -86,7 +86,7 @@ export interface BottleGetResDTO {
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
    */
   geo?: any[];
-  kind?: 'text';
+  kind?: 'text' | 'image' | '360' | 'short';
   /**
    * Last time someone commented on this post, used for relevance
    */
