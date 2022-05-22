@@ -53,6 +53,8 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   }
   if (_movedImagePath) {
     toCreate._contentImagePath = _movedImagePath
+    const _f = admin.storage().bucket().file(_movedImagePath)
+    await _f.makePublic()
     toCreate.contentImageUrl = admin.storage().bucket().file(_movedImagePath).publicUrl()
   }
 
