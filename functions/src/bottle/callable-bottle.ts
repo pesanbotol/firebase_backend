@@ -25,7 +25,7 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   /** Moving files uploaded from user uploaded dir to a secured dir */
   let _movedImagePath: string | undefined;
   if (dataIn.contentImagePath) {
-    const fullFilePath = `/userupload/${ctx.auth.uid}/${dataIn.contentImagePath}`
+    const fullFilePath = `userupload/${ctx.auth.uid}/${dataIn.contentImagePath}`
     const fileNameWExt = dataIn.contentImagePath;
 
     // If a contentImagePath is provided, check if the path exists
