@@ -27,6 +27,7 @@ export const typesenseCollections: Record<string, CollectionCreateSchema> = {
       { name: 'kind', type: 'string' },
       { name: 'contentText', type: 'string', optional: true },
       { name: '_contentImagePath', type: 'string', optional: true },
+      { name: 'createdAt', type: 'int64' },
       { name: 'contentImageUrl', type: 'string', optional: true, index: false },
       { name: 'geo', type: 'geopoint' }
     ]
