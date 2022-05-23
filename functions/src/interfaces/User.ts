@@ -19,3 +19,8 @@ export interface UserProfile {
   registeredAt: Date;
   username: string;
 }
+
+export interface UserProfileGet {
+  displayName?: string;
+  username: string;
+}

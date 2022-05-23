@@ -1,6 +1,7 @@
 import * as Joi from 'joi'
 import { Bottle, BottleCreateReqDTO, BottleGetResDTO } from '../interfaces'
 import { fbTimestampOrJsDateSchema, geoSchema } from './shared'
+import {UserProfileGetSchema} from './UserSchema'
 
 // #region SHARED SCHEMA FOR BOTTLE POST
 /**
@@ -72,6 +73,7 @@ export const BottleCreateReqDTOSchema =
  */
 export const BottleGetResDTOSchema = Joi.object<BottleGetResDTO>({
   relevanceScore: Joi.number().optional(),
+  user: UserProfileGetSchema,
   ..._userSuppliedBottleDataSchema,
   ..._serverSuppliedBottleDataSchema,
   ..._userSuppliedBottleDataSchema

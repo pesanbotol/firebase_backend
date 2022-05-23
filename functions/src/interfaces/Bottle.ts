@@ -3,6 +3,8 @@
  * Do not modify this file manually
  */
 
+import { UserProfileGet } from '.';
+
 export interface Bottle {
   _contentImagePath?: string;
   autoTags?: string[];
@@ -104,4 +106,5 @@ export interface BottleGetResDTO {
   relevanceScore?: number;
   tags?: string[];
   uid: string;
+  user?: UserProfileGet;
 }

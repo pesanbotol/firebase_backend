@@ -15,3 +15,4 @@
 export * from './BottleSchema'
 export * from './IndexDOISchema'
 export * from './SearchSchema'
+export * from './UserSchema'

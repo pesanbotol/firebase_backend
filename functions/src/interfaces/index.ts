@@ -104,6 +104,7 @@ export interface BottleGetResDTO {
   relevanceScore?: number;
   tags?: string[];
   uid: string;
+  user?: UserProfileGet;
 }
 
 export interface IndexByGeocordReqDTO {
@@ -127,4 +128,26 @@ export interface SearchReqDTO {
   perPage?: number;
   q: string | '' | null;
   searchKind: 'all' | 'users' | 'bottles';
+}
+
+export interface UserMetaAggegator {
+  commentCount: number;
+  likeCount: number;
+  postCount: number;
+  recvCommentCount: number;
+  recvLikeCount: number;
+}
+
+export interface UserProfile {
+  description?: string;
+  displayName?: string;
+  follows?: any[];
+  recvFollows?: any[];
+  registeredAt: Date;
+  username: string;
+}
+
+export interface UserProfileGet {
+  displayName?: string;
+  username: string;
 }

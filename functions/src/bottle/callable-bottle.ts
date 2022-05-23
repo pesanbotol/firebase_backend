@@ -76,7 +76,7 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
 })
 
 export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => {
-  if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can list message')
+  // if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can list message')
 
   const { error: errorIn, value: dataIn } = IndexByGeocordReqDTOSchema.validate(data)
   if (errorIn != null) throw new functions.https.HttpsError('invalid-argument', "Data supplied isn't in the correct shape", errorIn)
@@ -91,8 +91,15 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
 
 
   // TODO: Create a root level schema validation, don't validate bottle manually
+  const bottleRes = await Promise.all(postHit.map(async (it) => {
+    const user = await (await admin.firestore().collection('users').doc(it.document.uid).get()).data()
+    return {
+      ...it.document,
+      user,
+    }
+  }))
   const results = {
-    bottle: postHit.map((it) => it.document),
+    bottle: bottleRes,
     trend: [],
     bottleRecommended: []
   }
