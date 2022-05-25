@@ -31,18 +31,21 @@ export const onProfileWrite = functions.firestore.document('users/{userId}')
       // Update
       const oldUsername: string = snapshot.before.get('username')
       const newUsername: string = snapshot.after.get('username')
-      const uid: string = context.params.userId
 
-      functions.logger.info(`Updating ${oldUsername} to ${newUsername}`)
+      if (newUsername != oldUsername) {
+        const uid: string = context.params.userId
 
-      await db.runTransaction(async (tr) => {
-        // Open the old username for grab
-        tr.delete(db.collection('usernames').doc(oldUsername))
+        functions.logger.info(`Updating ${oldUsername} to ${newUsername}`)
 
-        // Flag the new username as taken
-        tr.create(db.collection('usernames').doc(newUsername), {
-          uid
+        await db.runTransaction(async (tr) => {
+          // Open the old username for grab
+          tr.delete(db.collection('usernames').doc(oldUsername))
+
+          // Flag the new username as taken
+          tr.create(db.collection('usernames').doc(newUsername), {
+            uid
+          })
         })
-      })
+      }
     }
   })
