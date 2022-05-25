@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import { Bottle } from '../interfaces'
+import { Bottle, BottleGetResDTO } from '../interfaces'
 import { BottleSchema, BottleCreateReqDTOSchema, BottleGetResDTOSchema } from '../schemas/BottleSchema'
 import { IndexByGeocordReqDTOSchema } from '../schemas'
 import { typeClient } from '../typesense'
@@ -20,13 +20,42 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
 
   const currentTimeUTC = admin.firestore.Timestamp.now()
 
+  const storage = admin.storage()
+
+  /** Moving files uploaded from user uploaded dir to a secured dir */
+  let _movedImagePath: string | undefined;
+  if (dataIn.contentImagePath) {
+    const fullFilePath = `userupload/${ctx.auth.uid}/${dataIn.contentImagePath}`
+    const fileNameWExt = dataIn.contentImagePath;
+
+    // If a contentImagePath is provided, check if the path exists
+    if (!await storage.bucket().file(fullFilePath).exists()) {
+      // The file path doesn't exist
+      throw new functions.https.HttpsError('invalid-argument', "the contentImagePath you specified doesn't exist")
+    } else {
+      const dest = `mediafiles/${ctx.auth.uid}/${fileNameWExt}`
+      await storage.bucket().file(fullFilePath).move(dest)
+      _movedImagePath = dest
+    }
+  }
+
   const uid = ctx.auth.uid
 
   // Merge user generated data with additional metadata
-  const toCreate: Bottle = {
-    ...dataIn,
+  // Remove `contentImagePath` since we no longer use it
+  const {contentImagePath, ...removedUnnecessaryUserSuppliedData} = dataIn
+
+  // TODO: Use better js syntax, undefined
+  let toCreate: Bottle = {
+    ...removedUnnecessaryUserSuppliedData,
     createdAt: currentTimeUTC,
-    uid
+    uid,
+  }
+  if (_movedImagePath) {
+    toCreate._contentImagePath = _movedImagePath
+    const _f = admin.storage().bucket().file(_movedImagePath)
+    await _f.makePublic()
+    toCreate.contentImageUrl = admin.storage().bucket().file(_movedImagePath).publicUrl()
   }
 
   const { error: errorTobeOut, value: dataTobeOut } = BottleSchema.validate(toCreate)
@@ -54,17 +83,31 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
 
   functions.logger.info(dataIn)
 
-  const postRes = await typeClient.collections('bottles').documents().search({
+  const postRes = await typeClient.collections<BottleGetResDTO>('bottles').documents().search({
     q: '',
     query_by: 'contentText'
   })
   const postHit = postRes.hits ?? []
 
-  return {
-    data: {
-      bottle: postHit.map((it) => it.document),
-      trend: [],
-      bottleRecommended: []
+
+  // TODO: Create a root level schema validation, don't validate bottle manually
+  const bottleRes = await Promise.all(postHit.map(async (it) => {
+    // FIXME: This shit is really not efficient
+    const user = await (await admin.firestore().collection('users').doc(it.document.uid).get()).data()
+    return {
+      ...it.document,
+      user,
     }
+  }))
+  const results = {
+    bottle: bottleRes,
+    trend: [],
+    bottleRecommended: []
+  }
+
+  console.log("AA", JSON.stringify(results));
+
+  return {
+    data: results
   }
 })

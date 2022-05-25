@@ -1,6 +1,7 @@
 import * as Joi from 'joi'
 import { Bottle, BottleCreateReqDTO, BottleGetResDTO } from '../interfaces'
 import { fbTimestampOrJsDateSchema, geoSchema } from './shared'
+import {UserProfileGetSchema} from './UserSchema'
 
 // #region SHARED SCHEMA FOR BOTTLE POST
 /**
@@ -8,12 +9,12 @@ import { fbTimestampOrJsDateSchema, geoSchema } from './shared'
  * Yang perlu dikirim dari client cuma secuil ini + Auth token
  */
 const _userSuppliedBottleDataSchema = {
-  kind: Joi.valid('text'),
+  kind: Joi.valid('text', 'image', '360', 'short'),
   /**
      * `content` boleh gak diisi misal ketika jenis konten adalah foto
      */
   contentText: Joi.string().min(1).max(255),
-  geo: geoSchema
+  geo: geoSchema,
 }
 
 /**
@@ -41,7 +42,12 @@ const _serverSuppliedBottleDataSchema = {
    * ML filled
    */
   autoTags: Joi.array().items(Joi.string()), // Mirip kek tag, tapi ditambahin tag yang disarankan
-  flags: Joi.array().items(Joi.string())
+  flags: Joi.array().items(Joi.string()),
+  /**
+   * Media
+   */
+  _contentImagePath: Joi.string(),
+  contentImageUrl: Joi.string(),
 }
 // #endregion
 
@@ -55,6 +61,7 @@ const _serverSuppliedBottleDataSchema = {
  */
 export const BottleCreateReqDTOSchema =
   Joi.object<BottleCreateReqDTO>({
+    contentImagePath: Joi.string(),
     ..._userSuppliedBottleDataSchema
   })
     .meta({ className: 'BottleCreateReqDTO' })
@@ -66,6 +73,7 @@ export const BottleCreateReqDTOSchema =
  */
 export const BottleGetResDTOSchema = Joi.object<BottleGetResDTO>({
   relevanceScore: Joi.number().optional(),
+  user: UserProfileGetSchema,
   ..._userSuppliedBottleDataSchema,
   ..._serverSuppliedBottleDataSchema,
   ..._userSuppliedBottleDataSchema

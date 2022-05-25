@@ -1,5 +1,5 @@
 import * as Joi from 'joi'
-import { UserMetaAggegator, UserProfile } from '../interfaces/User'
+import { UserMetaAggegator, UserProfile, UserProfileGet } from '../interfaces/User'
 
 /**
  * Schema counter di `users/{uid}/meta/aggregator
@@ -25,3 +25,12 @@ export const UserProfileSchema = Joi.object<UserProfile>({
   recvFollows: Joi.array()
 })
   .meta({ className: 'UserProfile' })
+
+/**
+ * Schema profile for user, as seen by other user
+ */
+ export const UserProfileGetSchema = Joi.object<UserProfileGet>({
+  username: Joi.string().min(3).max(64).required(),
+  displayName: Joi.string().min(1).max(64),
+})
+  .meta({ className: 'UserProfileGet' })
