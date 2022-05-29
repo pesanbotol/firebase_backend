@@ -63,7 +63,21 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
 
   const db = admin.firestore()
   const res = await db.collection('bottles').add(dataTobeOut)
+  // TODO: Error handling
   const createdDoc = (await res.get()).data()
+  
+  await db.runTransaction(async (tr) => {
+    const userProfileRef = db.collection('users').doc(ctx.auth!.uid)
+    const metaAggProfileRef = userProfileRef.collection('meta').doc('aggregator');
+    const agg = await (await tr.get(metaAggProfileRef)).data()!
+    const curPostCount = agg['postCount']
+    
+    tr.update(metaAggProfileRef, {
+      postCount: curPostCount+1
+    })
+  })
+
+  db.collection("users").doc(ctx.auth.uid).collection('meta').doc('aggregator')
 
   const { error: errorRes, value: dataRes } = BottleGetResDTOSchema.validate(createdDoc)
   if (errorRes != null) {
