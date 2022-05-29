@@ -38,7 +38,8 @@ export const createProfile = functions.auth.user().onCreate(async (user) => {
   const newProfile: UserProfile = {
     registeredAt: currentTime,
     description: 'halo',
-    username: proposalUid
+    username: proposalUid,
+    displayName: user.displayName ?? proposalUid,
   }
 
   const newProfileAggregator: UserMetaAggegator = {
