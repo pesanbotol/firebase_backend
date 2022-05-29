@@ -1,5 +1,5 @@
 import * as Joi from 'joi'
-import { UserMetaAggegator, UserProfile, UserProfileGet } from '../interfaces/User'
+import { UserMetaAggegator, UserProfile, UserProfileGet, UserUpdateProfile } from '../interfaces/User'
 
 /**
  * Schema counter di `users/{uid}/meta/aggregator
@@ -11,6 +11,17 @@ export const UserMetaAggegatorSchema = Joi.object<UserMetaAggegator>({
   likeCount: Joi.number().required().min(0),
   recvLikeCount: Joi.number().required().min(0)
 }).meta({ className: 'UserMetaAggegator' })
+
+/**
+ * Schema data di `users/{uid}/meta/socials
+ */
+ export const UserUpdateProfileSchema = Joi.object<UserUpdateProfile>({
+  facebook: Joi.string(),
+  instagram: Joi.string(),
+  twitter: Joi.string(),
+  description: Joi.string().max(256),
+  displayName: Joi.string().min(1).max(64),
+}).meta({ className: 'UserUpdateProfile' })
 
 /**
  * Schema profile user

@@ -151,3 +151,11 @@ export interface UserProfileGet {
   displayName?: string;
   username: string;
 }
+
+export interface UserUpdateProfile {
+  description?: string;
+  displayName?: string;
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+}
