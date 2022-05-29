@@ -14,6 +14,7 @@ import { typeClient } from '../typesense'
  */
 export const createBottle = functions.https.onCall(async (data, ctx) => {
   if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can create message')
+  const uid = ctx.auth.uid
 
   const { error: errorIn, value: dataIn } = BottleCreateReqDTOSchema.validate(data)
   if (errorIn != null) throw new functions.https.HttpsError('invalid-argument', "Data supplied isn't in the correct shape", errorIn)
@@ -23,13 +24,14 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   const storage = admin.storage()
 
   /** Moving files uploaded from user uploaded dir to a secured dir */
-  let _movedImagePath: string | undefined;
-  if (dataIn.contentImagePath) {
+  let _movedImagePath: string | undefined
+  if (dataIn.contentImagePath !== undefined) {
     const fullFilePath = `userupload/${ctx.auth.uid}/${dataIn.contentImagePath}`
-    const fileNameWExt = dataIn.contentImagePath;
+    const fileNameWExt = dataIn.contentImagePath
 
     // If a contentImagePath is provided, check if the path exists
-    if (!await storage.bucket().file(fullFilePath).exists()) {
+    const fileExist = await storage.bucket().file(fullFilePath).exists()
+    if (!fileExist[0]) {
       // The file path doesn't exist
       throw new functions.https.HttpsError('invalid-argument', "the contentImagePath you specified doesn't exist")
     } else {
@@ -39,19 +41,17 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
     }
   }
 
-  const uid = ctx.auth.uid
-
   // Merge user generated data with additional metadata
   // Remove `contentImagePath` since we no longer use it
-  const {contentImagePath, ...removedUnnecessaryUserSuppliedData} = dataIn
+  const { contentImagePath, ...removedUnnecessaryUserSuppliedData } = dataIn
 
   // TODO: Use better js syntax, undefined
-  let toCreate: Bottle = {
+  const toCreate: Bottle = {
     ...removedUnnecessaryUserSuppliedData,
     createdAt: currentTimeUTC,
-    uid,
+    uid
   }
-  if (_movedImagePath) {
+  if (_movedImagePath !== undefined) {
     toCreate._contentImagePath = _movedImagePath
     const _f = admin.storage().bucket().file(_movedImagePath)
     await _f.makePublic()
@@ -65,19 +65,19 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   const res = await db.collection('bottles').add(dataTobeOut)
   // TODO: Error handling
   const createdDoc = (await res.get()).data()
-  
+
   await db.runTransaction(async (tr) => {
-    const userProfileRef = db.collection('users').doc(ctx.auth!.uid)
-    const metaAggProfileRef = userProfileRef.collection('meta').doc('aggregator');
-    const agg = await (await tr.get(metaAggProfileRef)).data()!
-    const curPostCount = agg['postCount']
-    
+    const userProfileRef = db.collection('users').doc(uid)
+    const metaAggProfileRef = userProfileRef.collection('meta').doc('aggregator')
+    const agg = (await tr.get(metaAggProfileRef)).data()
+    const curPostCount: number = agg?.postCount
+
     tr.update(metaAggProfileRef, {
-      postCount: curPostCount+1
+      postCount: curPostCount + 1
     })
   })
 
-  db.collection("users").doc(ctx.auth.uid).collection('meta').doc('aggregator')
+  db.collection('users').doc(uid).collection('meta').doc('aggregator')
 
   const { error: errorRes, value: dataRes } = BottleGetResDTOSchema.validate(createdDoc)
   if (errorRes != null) {
@@ -103,14 +103,13 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
   })
   const postHit = postRes.hits ?? []
 
-
   // TODO: Create a root level schema validation, don't validate bottle manually
   const bottleRes = await Promise.all(postHit.map(async (it) => {
     // FIXME: This shit is really not efficient
     const user = await (await admin.firestore().collection('users').doc(it.document.uid).get()).data()
     return {
       ...it.document,
-      user,
+      user
     }
   }))
   const results = {
@@ -119,7 +118,7 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
     bottleRecommended: []
   }
 
-  console.log("AA", JSON.stringify(results));
+  console.log('AA', JSON.stringify(results))
 
   return {
     data: results

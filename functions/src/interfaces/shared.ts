@@ -7,14 +7,14 @@
  * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
  */
 export type fbTimestampOrJsDateSchema = {
-  _nanoseconds?: number;
-  _seconds?: number;
+  _nanoseconds?: number
+  _seconds?: number
 } | {
-  nanoseconds?: number;
-  seconds?: number;
-} | Date;
+  nanoseconds?: number
+  seconds?: number
+} | Date
 
 /**
  * Unified typesense, firestore, and client geoposition data type, [lat, lng]
  */
-export type geoSchema = any[];
+export type geoSchema = any[]

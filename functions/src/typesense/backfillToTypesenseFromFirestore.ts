@@ -72,5 +72,4 @@ export const onFirestoreTriggerBackfillIndex = functions.firestore.document(conf
 
       functions.logger.info('Done backfilling to Typesense from Firestore')
     }
-    return;
   })

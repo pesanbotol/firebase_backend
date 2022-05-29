@@ -15,12 +15,12 @@ export const UserMetaAggegatorSchema = Joi.object<UserMetaAggegator>({
 /**
  * Schema data di `users/{uid}/meta/socials
  */
- export const UserUpdateProfileSchema = Joi.object<UserUpdateProfile>({
+export const UserUpdateProfileSchema = Joi.object<UserUpdateProfile>({
   facebook: Joi.string(),
   instagram: Joi.string(),
   twitter: Joi.string(),
   description: Joi.string().max(256),
-  displayName: Joi.string().min(1).max(64),
+  displayName: Joi.string().min(1).max(64)
 }).meta({ className: 'UserUpdateProfile' })
 
 /**
@@ -40,8 +40,8 @@ export const UserProfileSchema = Joi.object<UserProfile>({
 /**
  * Schema profile for user, as seen by other user
  */
- export const UserProfileGetSchema = Joi.object<UserProfileGet>({
+export const UserProfileGetSchema = Joi.object<UserProfileGet>({
   username: Joi.string().min(3).max(64).required(),
-  displayName: Joi.string().min(1).max(64),
+  displayName: Joi.string().min(1).max(64)
 })
   .meta({ className: 'UserProfileGet' })

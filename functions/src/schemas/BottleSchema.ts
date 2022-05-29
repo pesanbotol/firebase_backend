@@ -1,7 +1,7 @@
 import * as Joi from 'joi'
 import { Bottle, BottleCreateReqDTO, BottleGetResDTO } from '../interfaces'
 import { fbTimestampOrJsDateSchema, geoSchema } from './shared'
-import {UserProfileGetSchema} from './UserSchema'
+import { UserProfileGetSchema } from './UserSchema'
 
 // #region SHARED SCHEMA FOR BOTTLE POST
 /**
@@ -14,7 +14,7 @@ const _userSuppliedBottleDataSchema = {
      * `content` boleh gak diisi misal ketika jenis konten adalah foto
      */
   contentText: Joi.string().min(1).max(255),
-  geo: geoSchema,
+  geo: geoSchema
 }
 
 /**
@@ -47,7 +47,7 @@ const _serverSuppliedBottleDataSchema = {
    * Media
    */
   _contentImagePath: Joi.string(),
-  contentImageUrl: Joi.string(),
+  contentImageUrl: Joi.string()
 }
 // #endregion
 

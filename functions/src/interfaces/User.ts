@@ -4,31 +4,31 @@
  */
 
 export interface UserMetaAggegator {
-  commentCount: number;
-  likeCount: number;
-  postCount: number;
-  recvCommentCount: number;
-  recvLikeCount: number;
+  commentCount: number
+  likeCount: number
+  postCount: number
+  recvCommentCount: number
+  recvLikeCount: number
 }
 
 export interface UserProfile {
-  description?: string;
-  displayName?: string;
-  follows?: any[];
-  recvFollows?: any[];
-  registeredAt: Date;
-  username: string;
+  description?: string
+  displayName?: string
+  follows?: any[]
+  recvFollows?: any[]
+  registeredAt: Date
+  username: string
 }
 
 export interface UserProfileGet {
-  displayName?: string;
-  username: string;
+  displayName?: string
+  username: string
 }
 
 export interface UserUpdateProfile {
-  description?: string;
-  displayName?: string;
-  facebook?: string;
-  instagram?: string;
-  twitter?: string;
+  description?: string
+  displayName?: string
+  facebook?: string
+  instagram?: string
+  twitter?: string
 }

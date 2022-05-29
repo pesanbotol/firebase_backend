@@ -32,7 +32,7 @@ export const onProfileWrite = functions.firestore.document('users/{userId}')
       const oldUsername: string = snapshot.before.get('username')
       const newUsername: string = snapshot.after.get('username')
 
-      if (newUsername != oldUsername) {
+      if (newUsername !== oldUsername) {
         const uid: string = context.params.userId
 
         functions.logger.info(`Updating ${oldUsername} to ${newUsername}`)
