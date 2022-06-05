@@ -139,6 +139,17 @@ export interface SearchReqDTO {
   searchKind: 'all' | 'users' | 'bottles';
 }
 
+export interface UserMeta {
+  aggregator?: UserMetaAggegator;
+  socials?: UserMetaAggegator;
+}
+
+export interface UserMetaAggegator {
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+}
+
 export interface UserMetaAggegator {
   commentCount: number;
   likeCount: number;
@@ -155,12 +166,26 @@ export interface UserProfile {
   description?: string;
   displayName?: string;
   follows?: any[];
+  meta: UserMeta;
   recvFollows?: any[];
-  registeredAt: Date;
+  /**
+   * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
+   */
+  registeredAt: {
+    _nanoseconds?: number;
+    _seconds?: number;
+  } | {
+    nanoseconds?: number;
+    seconds?: number;
+  } | Date;
   username: string;
 }
 
 export interface UserProfileSummaryGet {
+  /**
+   * Unified media storage type, with thumbnail support (Not only images)
+   */
+  avatar?: IMedia;
   displayName?: string;
   username: string;
 }

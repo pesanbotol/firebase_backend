@@ -35,11 +35,13 @@ export const createProfile = functions.auth.user().onCreate(async (user) => {
     }
   }
 
+  const _displayName = user.displayName && user.displayName.length > 0 ? user.displayName : proposalUid
+
   const newProfile: UserProfile = {
     registeredAt: currentTime,
     description: 'halo',
     username: proposalUid,
-    displayName: user.displayName ?? proposalUid
+    displayName: _displayName,
   }
 
   const newProfileAggregator: UserMetaAggegator = {
