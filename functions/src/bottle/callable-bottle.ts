@@ -2,8 +2,10 @@ import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import { Bottle, BottleGetResDTO } from '../interfaces'
 import { BottleSchema, BottleCreateReqDTOSchema, BottleGetResDTOSchema } from '../schemas/BottleSchema'
-import { IndexByGeocordReqDTOSchema } from '../schemas'
+import { IndexByGeocordReqDTOSchema, UserProfileSummaryGetSchema } from '../schemas'
 import { typeClient } from '../typesense'
+import * as path from 'path'
+import {unflatten} from '../typesense/utils'
 
 /**
  * Create a new bottled message, either image or text
@@ -31,10 +33,18 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
 
     // If a contentImagePath is provided, check if the path exists
     const fileExist = await storage.bucket().file(fullFilePath).exists()
+
     if (!fileExist[0]) {
       // The file path doesn't exist
       throw new functions.https.HttpsError('invalid-argument', "the contentImagePath you specified doesn't exist")
     } else {
+      const fileMime = await storage.bucket().file(fullFilePath).getMetadata()
+      const contentType = fileMime[0]['contentType']
+      
+      if (!['image/jpeg', 'image/jpg', 'image/png'].includes(contentType)) {
+        throw new functions.https.HttpsError('invalid-argument', "image must be one of image/jpeg image/png or image/jpg")
+      }
+
       const dest = `mediafiles/${ctx.auth.uid}/${fileNameWExt}`
       await storage.bucket().file(fullFilePath).move(dest)
       _movedImagePath = dest
@@ -49,13 +59,29 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   const toCreate: Bottle = {
     ...removedUnnecessaryUserSuppliedData,
     createdAt: currentTimeUTC,
-    uid
+    uid,
   }
   if (_movedImagePath !== undefined) {
+    const _p = path.parse(_movedImagePath)
+    const fileNameWithoutExt =_p.name
+    const fileNameExt = _p.ext
+
+    // Old content image path
     toCreate._contentImagePath = _movedImagePath
     const _f = admin.storage().bucket().file(_movedImagePath)
     await _f.makePublic()
     toCreate.contentImageUrl = admin.storage().bucket().file(_movedImagePath).publicUrl()
+
+    // Newer content image with thumbnail
+    const _ciThumb = admin.storage().bucket().file(`mediafiles/${uid}/${fileNameWithoutExt}_200x200${fileNameExt}`)
+    const _ciMain = admin.storage().bucket().file(`mediafiles/${uid}/${fileNameWithoutExt}_1080x1080${fileNameExt}`)
+    _ciMain.makePublic()
+    _ciThumb.makePublic()
+    toCreate.contentImage = {
+      kind: 'image',
+      mediaThumbnailUrl: _ciThumb.publicUrl(),
+      mediaUrl: _ciMain.publicUrl(),
+    }
   }
 
   const { error: errorTobeOut, value: dataTobeOut } = BottleSchema.validate(toCreate)
@@ -106,9 +132,15 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
   // TODO: Create a root level schema validation, don't validate bottle manually
   const bottleRes = await Promise.all(postHit.map(async (it) => {
     // FIXME: This shit is really not efficient
-    const user = await (await admin.firestore().collection('users').doc(it.document.uid).get()).data()
+    const userData = await (await admin.firestore().collection('users').doc(it.document.uid).get()).data()
+    const {value: user, error} = UserProfileSummaryGetSchema.validate(userData, {stripUnknown: true})
+    if (error) {
+      functions.logger.warn(error)
+    }
+
+    const unflattened = unflatten(it.document)
     return {
-      ...it.document,
+      ...unflattened,
       user
     }
   }))
