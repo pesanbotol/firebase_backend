@@ -30,7 +30,11 @@ export const typesenseCollections: Record<string, CollectionCreateSchema> = {
       { name: 'uid', type: 'string' },
       { name: 'createdAt', type: 'int64' },
       { name: 'contentImageUrl', type: 'string', optional: true, index: false },
-      { name: 'geo', type: 'geopoint' }
+      { name: 'geo', type: 'geopoint' },
+      
+      { name: 'contentImage.kind', type: 'string', optional: true, index: false },
+      { name: 'contentImage.mediaThumbnailUrl', type: 'string', optional: true, index: false },
+      { name: 'contentImage.mediaUrl', type: 'string', optional: true, index: false },
     ]
     // 'default_sorting_field': 'ratings_count'
   }

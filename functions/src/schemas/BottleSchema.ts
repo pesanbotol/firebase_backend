@@ -1,6 +1,6 @@
 import * as Joi from 'joi'
 import { Bottle, BottleCreateReqDTO, BottleGetResDTO } from '../interfaces'
-import { fbTimestampOrJsDateSchema, geoSchema } from './shared'
+import { fbTimestampOrJsDateSchema, geoSchema, mediaSchema } from './shared'
 import { UserProfileSummaryGetSchema } from './UserSchema'
 
 // #region SHARED SCHEMA FOR BOTTLE POST
@@ -45,9 +45,14 @@ const _serverSuppliedBottleDataSchema = {
   flags: Joi.array().items(Joi.string()),
   /**
    * Media
+   * TODO: Remove this and repalce with contentImage
    */
   _contentImagePath: Joi.string(),
-  contentImageUrl: Joi.string()
+  contentImageUrl: Joi.string(),
+  /**
+   * Media with thumbnail support
+   */
+  contentImage: mediaSchema,
 }
 // #endregion
 

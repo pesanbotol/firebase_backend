@@ -10,6 +10,10 @@ export interface Bottle {
    * Auto aggregated number of comments received for this post (Including filtered, spam etc)
    */
   commentCount?: number;
+  /**
+   * Unified media storage type, with thumbnail support (Not only images)
+   */
+  contentImage?: IMedia;
   contentImageUrl?: string;
   contentText?: string;
   /**
@@ -69,6 +73,10 @@ export interface BottleGetResDTO {
    * Auto aggregated number of comments received for this post (Including filtered, spam etc)
    */
   commentCount?: number;
+  /**
+   * Unified media storage type, with thumbnail support (Not only images)
+   */
+  contentImage?: IMedia;
   contentImageUrl?: string;
   contentText?: string;
   /**

@@ -32,19 +32,30 @@ export const typesenseDocumentFromSnapshot = (
 ): any => {
   const data = firestoreDocumentSnapshot.data()
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  let entries = Object.entries(data!)
+  // using flat to flatten nested objects
+  // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
+  const flattened : any = flat(
+    Object.fromEntries(Object.entries(data!).map(([key, value]) => [key, mapValue(value)])),
+    { safe: true }
+  )
 
+  let entries = Object.entries(flattened);
   if (fieldsToExtract.length > 0) {
     entries = entries.filter(([key]) => fieldsToExtract.includes(key))
   }
-
-  // using flat to flatten nested objects
-  // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
-  const typesenseDocument: any = flat(
-    Object.fromEntries(entries.map(([key, value]) => [key, mapValue(value)])),
-    { safe: true }
-  )
+  const typesenseDocument = Object.fromEntries(entries)
+  
   typesenseDocument.id = firestoreDocumentSnapshot.id
   return typesenseDocument
+}
+
+export const unflatten: any = (data: any) => {
+  var result = {}
+  for (var i in data) {
+    var keys = i.split('.')
+    keys.reduce(function(r: any, e, j) {
+      return r[e] || (r[e] = isNaN(Number(keys[j + 1])) ? (keys.length - 1 == j ? data[i] : {}) : [])
+    }, result)
+  }
+  return result
 }
