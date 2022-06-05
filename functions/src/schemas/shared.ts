@@ -1,4 +1,5 @@
 import * as Joi from 'joi'
+import {IMedia} from '../interfaces/shared'
 
 export const fbTimestampOrJsDateSchema = Joi.alternatives([
   Joi.object().keys({ _seconds: Joi.number(), _nanoseconds: Joi.number() }),
@@ -10,3 +11,9 @@ export const geoSchema = Joi.array().length(2).ordered(
   Joi.number().min(-90).max(90).required().description('Lat is from -90.0 to +90.0 degree'),
   Joi.number().min(-180).max(180).required().description('Longitude is from -180.0 to +180.0 degree')
 ).description('Unified typesense, firestore, and client geoposition data type, [lat, lng]')
+
+export const mediaSchema = Joi.object<IMedia>({
+  kind: Joi.valid('image', 'video'),
+  mediaUrl: Joi.string(),
+  mediaThumbnailUrl: Joi.string(),
+}).meta({ className: 'IMedia' }).description('Unified media storage type, with thumbnail support (Not only images)')

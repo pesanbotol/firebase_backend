@@ -4,8 +4,8 @@ import * as admin from 'firebase-admin'
 import * as authsTrigger from './auth'
 import * as callableBottle from './bottle/callable-bottle'
 import * as callableSeeder from './seeder/index'
-import { onFirestoreTriggerBackfillIndex } from './typesense/backfillToTypesenseFromFirestore'
-import { onWriteUsersUpdateTypesenseIndex, onWriteBottlesUpdateTypesenseIndex } from './typesense/indexToTypesenseOnFirestoreWrite'
+import {onFirestoreTriggerBackfillIndex} from './typesense/backfillToTypesenseFromFirestore'
+import {onWriteUsersUpdateTypesenseIndex, onWriteBottlesUpdateTypesenseIndex} from './typesense/indexToTypesenseOnFirestoreWrite'
 import * as typesenseCollectionsTrigger from './typesense/collectionSchemas'
 import * as searchsTrigger from './search/search-callable'
 
@@ -30,3 +30,31 @@ export const typesense = {
 }
 export const seeder = callableSeeder
 export const searchTrigger = searchsTrigger
+
+
+/**
+ * Only allow this in development
+ */
+export const createAuthToken = functions.https.onCall(async (data, context) => {
+  if (process.env.NODE_ENV != 'development') {
+    throw new functions.https.HttpsError('unknown', "only in development")
+  }
+
+  if (!data.uid) {
+    throw new functions.https.HttpsError("invalid-argument", "Missing UID argument", "Missing UID argument");
+  }
+
+  try {
+    const value = await admin.auth().createCustomToken(data.uid)
+    return {
+      status: true,
+      token: value
+    };
+  } catch (error) {
+    functions.logger.warn(error)
+    return {
+      status: false,
+      token: ""
+    }
+  }
+})

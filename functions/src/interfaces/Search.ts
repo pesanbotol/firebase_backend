@@ -7,16 +7,16 @@ export interface IndexByGeocordReqDTO {
   /**
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
    */
-  geo?: any[]
+  geo?: any[];
   /**
    * show post as recent as x minutes, default to 24 hours
    */
-  minutes?: number
+  minutes?: number;
 }
 
 export interface SearchReqDTO {
-  page?: number
-  perPage?: number
-  q: string | '' | null
-  searchKind: 'all' | 'users' | 'bottles'
+  page?: number;
+  perPage?: number;
+  q: string | '' | null;
+  searchKind: 'all' | 'users' | 'bottles';
 }

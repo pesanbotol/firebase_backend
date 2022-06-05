@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import { UserUpdateProfileSchema } from '../schemas'
+import { UserProfileSchema, UserUpdateProfileSchema } from '../schemas'
 
 export const myProfile = functions.https.onCall(async (data, ctx) => {
   if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can see their profile')
@@ -11,7 +11,7 @@ export const myProfile = functions.https.onCall(async (data, ctx) => {
   const aggregator = await (await db.collection('users').doc(uid).collection('meta').doc('aggregator').get()).data()
   const socials = await (await db.collection('users').doc(uid).collection('meta').doc('socials').get()).data()
 
-  const results = {
+  const _tobe = {
     ...userProfile,
     meta: {
       aggregator,
@@ -19,8 +19,13 @@ export const myProfile = functions.https.onCall(async (data, ctx) => {
     }
   }
 
+  const {value, error} = UserProfileSchema.validate(_tobe)
+  if (error) {
+    functions.logger.warn(error)
+  }
+
   return {
-    data: results
+    data: value
   }
 })
 
