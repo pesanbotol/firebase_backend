@@ -1,7 +1,8 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import { UserMetaAggegator, UserProfile } from '../interfaces/User'
+import { UserCreateProfile } from '../interfaces/User'
 import { isUsernameTaken } from './utils'
+import {UserMetaAggegator} from '../interfaces'
 
 const _generateRandomNumericId = (): string => Math.floor(Math.random() * Math.floor(Math.random() * Date.now())).toString()
 
@@ -37,7 +38,7 @@ export const createProfile = functions.auth.user().onCreate(async (user) => {
 
   const _displayName = user.displayName && user.displayName.length > 0 ? user.displayName : proposalUid
 
-  const newProfile: UserProfile = {
+  const newProfile: UserCreateProfile = {
     registeredAt: currentTime,
     description: 'halo',
     username: proposalUid,

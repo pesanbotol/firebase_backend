@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import {UserProfile} from '../interfaces/User';
+import {UserCreateProfile} from '../interfaces/User';
 import {faker} from '@faker-js/faker';
 import {UserProfileSchema} from '../schemas';
 
@@ -13,7 +13,7 @@ export const seedProfile = functions.https.onCall((data, ctx) => {
   functions.logger.info('Mulai seeding user profile');
 
   for (let i = 0; i < 10; i++) {
-    const user: UserProfile = {
+    const user: UserCreateProfile = {
       registeredAt: new Date(),
       description: faker.random.words(5),
       username: faker.random.words(1),

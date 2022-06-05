@@ -1,6 +1,7 @@
 import * as Joi from 'joi'
-import { UserMeta, UserMetaAggegator, UserProfile, UserProfileSummaryGet, UserUpdateProfile } from '../interfaces/User'
+import {UserProfile, UserProfileSummaryGet, UserUpdateProfile} from '../interfaces/User'
 import {fbTimestampOrJsDateSchema, mediaSchema} from './shared'
+import {UserMetaSchema} from './UserMetaSchema'
 
 const _avatarMedia = mediaSchema.default({
   kind: 'image',
@@ -13,58 +14,46 @@ const _displayNameOrUsername = Joi.string().min(1).max(64).default((parent) => {
 })
 
 /**
- * Schema counter di `users/{uid}/meta/aggregator
+ * Schema profile user creating
  */
-export const UserMetaAggegatorSchema = Joi.object<UserMetaAggegator>({
-  postCount: Joi.number().required().min(0),
-  commentCount: Joi.number().required().min(0),
-  recvCommentCount: Joi.number().required().min(0),
-  likeCount: Joi.number().required().min(0),
-  recvLikeCount: Joi.number().required().min(0)
-}).meta({ className: 'UserMetaAggegator' })
+const _userProfileCreateSchema = {
+  registeredAt: fbTimestampOrJsDateSchema.required(),
+  username: Joi.string().min(3).max(64).required(),
+  description: Joi.string().max(256),
+  displayName: _displayNameOrUsername,
+}
 
-/**
- * Schema metadata di `users/{uid}/meta/socials
- */
- export const UserMetaSocialsSchema = Joi.object({
-  facebook: Joi.string(),
-  instagram: Joi.string(),
-  twitter: Joi.string(),
-}).meta({ className: 'UserMetaAggegator' })
-
-export const UserMetaSchema = Joi.object<UserMeta>({
-  aggregator: UserMetaAggegatorSchema,
-  socials: UserMetaSocialsSchema,
-}).meta({ className: 'UserMeta' })
+/** =================== */
 
 /**
  * Schema data di `users/{uid}/meta/socials
  */
- export const UserUpdateProfileSchema = Joi.object<UserUpdateProfile>({
+export const UserUpdateProfileSchema = Joi.object<UserUpdateProfile>({
   facebook: Joi.string(),
   instagram: Joi.string(),
   twitter: Joi.string(),
   description: Joi.string().max(256),
   displayName: Joi.string().min(1).max(64)
-}).meta({ className: 'UserUpdateProfile' })
+}).meta({className: 'UserUpdateProfile'})
 
+/**
+ * Untuk ngebuat user baru
+ */
+export const UserCreateProfileSchema = Joi.object(_userProfileCreateSchema).meta({className: 'UserCreateProfile'})
 
 /**
  * Schema profile user
  */
 export const UserProfileSchema = Joi.object<UserProfile>({
+  ..._userProfileCreateSchema,
   avatar: _avatarMedia,
-  registeredAt: fbTimestampOrJsDateSchema.required(),
-  username: Joi.string().min(3).max(64).required(),
-  description: Joi.string().max(256),
-  displayName: _displayNameOrUsername,
 
   follows: Joi.array(),
   recvFollows: Joi.array(),
 
   meta: UserMetaSchema.required(),
 })
-  .meta({ className: 'UserProfile' })
+  .meta({className: 'UserProfile'})
 
 /**
  * Schema profile for user, as seen by other user, used in list bottle index
@@ -74,4 +63,4 @@ export const UserProfileSummaryGetSchema = Joi.object<UserProfileSummaryGet>({
   displayName: _displayNameOrUsername,
   avatar: _avatarMedia,
 })
-  .meta({ className: 'UserProfileSummaryGet' })
+  .meta({className: 'UserProfileSummaryGet'})

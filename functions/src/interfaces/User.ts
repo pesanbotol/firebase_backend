@@ -3,25 +3,22 @@
  * Do not modify this file manually
  */
 
-import { IMedia, UserMeta } from '.';
+import { IMedia, UserMetaAggegator, UserMetaSocials } from '.';
 
-export interface UserMeta {
-  aggregator?: UserMetaAggegator;
-  socials?: UserMetaAggegator;
-}
-
-export interface UserMetaAggegator {
-  facebook?: string;
-  instagram?: string;
-  twitter?: string;
-}
-
-export interface UserMetaAggegator {
-  commentCount: number;
-  likeCount: number;
-  postCount: number;
-  recvCommentCount: number;
-  recvLikeCount: number;
+export interface UserCreateProfile {
+  description?: string;
+  displayName?: string;
+  /**
+   * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
+   */
+  registeredAt: {
+    _nanoseconds?: number;
+    _seconds?: number;
+  } | {
+    nanoseconds?: number;
+    seconds?: number;
+  } | Date;
+  username: string;
 }
 
 export interface UserProfile {
@@ -32,7 +29,10 @@ export interface UserProfile {
   description?: string;
   displayName?: string;
   follows?: any[];
-  meta: UserMeta;
+  meta: {
+    aggregator?: UserMetaAggegator;
+    socials?: UserMetaSocials;
+  };
   recvFollows?: any[];
   /**
    * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
