@@ -13,7 +13,7 @@ export const geoSchema = Joi.array().length(2).ordered(
 ).description('Unified typesense, firestore, and client geoposition data type, [lat, lng]')
 
 export const mediaSchema = Joi.object<IMedia>({
-  kind: Joi.valid('image', 'video'),
+  kind: Joi.valid('image', 'video', 'unknown'),
   mediaUrl: Joi.string(),
   mediaThumbnailUrl: Joi.string(),
 }).meta({ className: 'IMedia' }).description('Unified media storage type, with thumbnail support (Not only images)')

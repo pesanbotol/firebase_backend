@@ -1,7 +1,7 @@
 import * as Joi from 'joi'
-import { Bottle, BottleCreateReqDTO, BottleGetResDTO } from '../interfaces'
-import { fbTimestampOrJsDateSchema, geoSchema, mediaSchema } from './shared'
-import { UserProfileSummaryGetSchema } from './UserSchema'
+import {Bottle, BottleCreateReqDTO, BottleGetResDTO} from '../interfaces'
+import {fbTimestampOrJsDateSchema, geoSchema, mediaSchema} from './shared'
+import {UserProfileSummaryGetSchema} from './UserSchema'
 
 // #region SHARED SCHEMA FOR BOTTLE POST
 /**
@@ -23,6 +23,7 @@ const _userSuppliedBottleDataSchema = {
  * Note bahwa tidak ada kolom `relevance` disini karena itu personalized
  */
 const _serverSuppliedBottleDataSchema = {
+  id: Joi.string().required(),
   createdAt: fbTimestampOrJsDateSchema.required(),
   uid: Joi.string().required(),
   likeCount: Joi.number(),
@@ -52,7 +53,16 @@ const _serverSuppliedBottleDataSchema = {
   /**
    * Media with thumbnail support
    */
-  contentImage: mediaSchema,
+  contentImage: mediaSchema.default((parent) => {
+    if ('contentImageUrl' in parent) {
+      return {
+        kind: 'unknown',
+        mediaUrl: parent.contentImageUrl,
+        mediaThumbnailUrl: parent.contentImageUrl,
+      }
+    }
+    return null
+  }),
 }
 // #endregion
 
@@ -69,7 +79,7 @@ export const BottleCreateReqDTOSchema =
     contentImagePath: Joi.string(),
     ..._userSuppliedBottleDataSchema
   })
-    .meta({ className: 'BottleCreateReqDTO' })
+    .meta({className: 'BottleCreateReqDTO'})
     .description('Schema for creating a new post, sent from client')
 
 /**
@@ -83,7 +93,7 @@ export const BottleGetResDTOSchema = Joi.object<BottleGetResDTO>({
   ..._serverSuppliedBottleDataSchema,
   ..._userSuppliedBottleDataSchema
 })
-  .meta({ className: 'BottleGetResDTO' })
+  .meta({className: 'BottleGetResDTO'})
   .description('Schema for validating post received by client from server, this adds personalized relevance score')
 // #endregion
 
@@ -97,4 +107,4 @@ export const BottleGetResDTOSchema = Joi.object<BottleGetResDTO>({
 export const BottleSchema = Joi.object<Bottle>({
   ..._serverSuppliedBottleDataSchema,
   ..._userSuppliedBottleDataSchema
-}).meta({ className: 'Bottle' })
+}).meta({className: 'Bottle'})

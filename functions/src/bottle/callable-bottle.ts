@@ -133,14 +133,18 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
   const bottleRes = await Promise.all(postHit.map(async (it) => {
     // FIXME: This shit is really not efficient
     const userData = await (await admin.firestore().collection('users').doc(it.document.uid).get()).data()
-    const {value: user, error} = UserProfileSummaryGetSchema.validate(userData, {stripUnknown: true})
-    if (error) {
-      functions.logger.warn(error)
+    const {value: user, error: errorUserData} = UserProfileSummaryGetSchema.validate(userData, {stripUnknown: true})
+    if (errorUserData) {
+      functions.logger.warn(errorUserData)
     }
 
-    const unflattened = unflatten(it.document)
+    const {value: bottleUnflatten, error: errorBottle} = BottleGetResDTOSchema.validate(unflatten(it.document))
+    if (errorBottle) {
+      functions.logger.warn(errorBottle)
+    }
+
     return {
-      ...unflattened,
+      ...bottleUnflatten,
       user
     }
   }))
