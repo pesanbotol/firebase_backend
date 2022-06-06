@@ -138,10 +138,14 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
       functions.logger.warn(errorUserData)
     }
 
-    const {value: bottleUnflatten, error: errorBottle} = BottleGetResDTOSchema.validate(unflatten(it.document))
+    const queryUnflatten = unflatten(it.document)
+    let {value: bottleUnflatten, error: errorBottle} = BottleGetResDTOSchema.validate(queryUnflatten)
     if (errorBottle) {
-      functions.logger.warn(errorBottle)
+      functions.logger.warn("indexBottleByGeocord-error", errorBottle)
     }
+
+    // TODO: Fixme, this shouldn't be added manually
+    bottleUnflatten!['createdAt'] = queryUnflatten.createdAt;
 
     return {
       ...bottleUnflatten,

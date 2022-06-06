@@ -42,7 +42,7 @@ export const onFirestoreTriggerBackfillIndex = functions.firestore.document(conf
       for (const firestoreDocument of querySnapshot.docs) {
         currentDocumentNumber += 1
         currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument, fieldsToExtractForCollection(collectionName)))
-        console.log('entah entah', firestoreDocument, currentDocumentsBatch)
+        // console.log('entah entah', firestoreDocument, currentDocumentsBatch)
 
         if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
           try {
