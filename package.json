@@ -1,9 +1,0 @@
-{
-  "devDependencies": {
-    "@faker-js/faker": "^7.1.0",
-    "ts-standard": "^11.0.0"
-  },
-  "dependencies": {
-    "path": "^0.12.7"
-  }
-}

@@ -21,7 +21,9 @@
     "firebase-functions": "^3.18.0",
     "flat": "^5.0.2",
     "joi": "^17.6.0",
-    "typesense": "^1.2.2"
+    "typesense": "^1.2.2",
+    "path": "^0.12.7",
+    "@faker-js/faker": "^7.1.0"
   },
   "devDependencies": {
     "@types/flat": "^5.0.2",
