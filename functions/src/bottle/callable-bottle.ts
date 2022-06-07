@@ -6,6 +6,7 @@ import { IndexByGeocordReqDTOSchema, UserProfileSummaryGetSchema } from '../sche
 import { typeClient } from '../typesense'
 import * as path from 'path'
 import {unflatten} from '../typesense/utils'
+import {isDepictNudity} from '../ml/nudity'
 
 /**
  * Create a new bottled message, either image or text
@@ -45,7 +46,14 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
         throw new functions.https.HttpsError('invalid-argument', "image must be one of image/jpeg image/png or image/jpg")
       }
 
+      // Check for nudity
+      if (await isDepictNudity(fullFilePath)) {
+        // Reject
+        throw new functions.https.HttpsError('invalid-argument', "Nudity picture detected, post creation rejected")
+      }
+
       const dest = `mediafiles/${ctx.auth.uid}/${fileNameWExt}`
+
       await storage.bucket().file(fullFilePath).move(dest)
       _movedImagePath = dest
     }
@@ -75,8 +83,8 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
     // Newer content image with thumbnail
     const _ciThumb = admin.storage().bucket().file(`mediafiles/${uid}/${fileNameWithoutExt}_200x200${fileNameExt}`)
     const _ciMain = admin.storage().bucket().file(`mediafiles/${uid}/${fileNameWithoutExt}_1080x1080${fileNameExt}`)
-    _ciMain.makePublic()
-    _ciThumb.makePublic()
+    // _ciMain.makePublic()
+    // _ciThumb.makePublic()
     toCreate.contentImage = {
       kind: 'image',
       mediaThumbnailUrl: _ciThumb.publicUrl(),

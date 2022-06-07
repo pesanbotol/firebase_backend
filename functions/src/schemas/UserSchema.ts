@@ -1,12 +1,23 @@
+import {logger} from 'firebase-functions/v1'
 import * as Joi from 'joi'
 import {UserProfile, UserProfileSummaryGet, UserUpdateProfile} from '../interfaces/User'
 import {fbTimestampOrJsDateSchema, mediaSchema} from './shared'
 import {UserMetaSchema} from './UserMetaSchema'
 
+const DEFAULT_AVATAR_URL = process.env.DEFAULT_AVATAR_URL
+const DEFAULT_AVATAR_THUMB_URL = process.env.DEFAULT_AVATAR_THUMB_URL
+
+if (!DEFAULT_AVATAR_URL) {
+  logger.warn("DEFAULT_AVATAR_URL is not set")
+}
+if (!DEFAULT_AVATAR_THUMB_URL) {
+  logger.warn("DEFAULT_AVATAR_THUMB_URL is not set")
+}
+
 const _avatarMedia = mediaSchema.default({
   kind: 'image',
-  mediaThumbnailUrl: 'http://localhost:9199/v0/b/semiotic-joy-349807.appspot.com/o/staticfiles%2Fdefaultavatar%2Fblank-thumbnail.jpeg?alt=media&token=771e3be0-b864-4b23-8df1-ef3380eeec83',
-  mediaUrl: 'http://localhost:9199/v0/b/semiotic-joy-349807.appspot.com/o/staticfiles%2Fdefaultavatar%2Fblank.jpeg?alt=media&token=db1f2cd3-558a-4cb0-b5c0-98066588e91d'
+  mediaThumbnailUrl: DEFAULT_AVATAR_THUMB_URL,
+  mediaUrl: DEFAULT_AVATAR_URL,
 })
 
 const _displayNameOrUsername = Joi.string().min(1).max(64).default((parent) => {
