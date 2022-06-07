@@ -72,19 +72,20 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   if (_movedImagePath !== undefined) {
     const _p = path.parse(_movedImagePath)
     const fileNameWithoutExt =_p.name
-    const fileNameExt = _p.ext
-
-    // Old content image path
-    toCreate._contentImagePath = _movedImagePath
-    const _f = admin.storage().bucket().file(_movedImagePath)
-    await _f.makePublic()
-    toCreate.contentImageUrl = admin.storage().bucket().file(_movedImagePath).publicUrl()
 
     // Newer content image with thumbnail
-    const _ciThumb = admin.storage().bucket().file(`mediafiles/${uid}/${fileNameWithoutExt}_200x200${fileNameExt}`)
-    const _ciMain = admin.storage().bucket().file(`mediafiles/${uid}/${fileNameWithoutExt}_1080x1080${fileNameExt}`)
+    const biggerFilePath = `mediafiles/${uid}/${fileNameWithoutExt}_1080x1080.jpeg`
+    const _ciThumb = admin.storage().bucket().file(`mediafiles/${uid}/${fileNameWithoutExt}_200x200.jpeg`)
+    const _ciMain = admin.storage().bucket().file(biggerFilePath)
     // _ciMain.makePublic()
     // _ciThumb.makePublic()
+
+    // Old content image path, BACKWARD COMPATIBILITY, use bigger version
+    toCreate._contentImagePath = biggerFilePath
+    // const _f = admin.storage().bucket().file(_movedImagePath)
+    // await _f.makePublic()
+    toCreate.contentImageUrl = admin.storage().bucket().file(biggerFilePath).publicUrl()
+
     toCreate.contentImage = {
       kind: 'image',
       mediaThumbnailUrl: _ciThumb.publicUrl(),

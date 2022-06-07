@@ -21,12 +21,12 @@ export const isDepictNudity = async (fullImagePathStorage: string) => {
     }
 
     // Fail safe, assume it's safe if it's not public (NOT IDEAL ALERT)
-    const isPublic = toDetect.isPublic()
+    // const isPublic = toDetect.isPublic()
 
-    if (!isPublic) {
-      logger.warn("file isn't public, making it temporarily public") // NOT IDEAL
-      await toDetect.makePublic()
-    }
+    // if (!isPublic) {
+    //   logger.warn("file isn't public, making it temporarily public") // NOT IDEAL
+    //   // await toDetect.makePublic()
+    // }
 
     const publicUrl = await toDetect.publicUrl()
 
@@ -43,11 +43,11 @@ export const isDepictNudity = async (fullImagePathStorage: string) => {
     // Again, assume it's safe, not ideal
     const isNudity = res.data['depict_nudity'] ?? false
 
-    if (!isPublic) {
-      // If the file was private, make it public temporarily and then make it private again
-      // better solution would be to use signed url, but hey, it doesn't work in emulator
-      toDetect.makePrivate()
-    }
+    // if (!isPublic) {
+    //   // If the file was private, make it public temporarily and then make it private again
+    //   // better solution would be to use signed url, but hey, it doesn't work in emulator
+    //   toDetect.makePrivate()
+    // }
     return isNudity
   } catch (error) {
     logger.error("isDepictNudity fail for some reason after all that fail safe", error)
