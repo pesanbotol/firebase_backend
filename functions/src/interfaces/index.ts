@@ -31,6 +31,7 @@ export interface Bottle {
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
    */
   geo?: any[];
+  id?: string;
   kind?: 'text' | 'image' | '360' | 'short';
   /**
    * Last time someone commented on this post, used for relevance
@@ -94,6 +95,7 @@ export interface BottleGetResDTO {
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
    */
   geo?: any[];
+  id?: string;
   kind?: 'text' | 'image' | '360' | 'short';
   /**
    * Last time someone commented on this post, used for relevance
@@ -119,7 +121,7 @@ export interface BottleGetResDTO {
  * Unified media storage type, with thumbnail support (Not only images)
  */
 export interface IMedia {
-  kind?: 'image' | 'video';
+  kind?: 'image' | 'video' | 'unknown';
   mediaThumbnailUrl?: string;
   mediaUrl?: string;
 }

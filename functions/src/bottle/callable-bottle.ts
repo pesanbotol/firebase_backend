@@ -85,7 +85,7 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   }
 
   const { error: errorTobeOut, value: dataTobeOut } = BottleSchema.validate(toCreate)
-  if (errorTobeOut != null) throw new functions.https.HttpsError('unknown', "can't create the bottle due to internal unknown error", errorIn)
+  if (errorTobeOut != null) throw new functions.https.HttpsError('unknown', "can't create the bottle due to internal unknown error", errorTobeOut)
 
   const db = admin.firestore()
   const res = await db.collection('bottles').add(dataTobeOut)

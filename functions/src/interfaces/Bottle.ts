@@ -33,6 +33,7 @@ export interface Bottle {
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
    */
   geo?: any[];
+  id?: string;
   kind?: 'text' | 'image' | '360' | 'short';
   /**
    * Last time someone commented on this post, used for relevance
@@ -96,6 +97,7 @@ export interface BottleGetResDTO {
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
    */
   geo?: any[];
+  id?: string;
   kind?: 'text' | 'image' | '360' | 'short';
   /**
    * Last time someone commented on this post, used for relevance

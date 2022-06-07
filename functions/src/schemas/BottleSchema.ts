@@ -23,7 +23,7 @@ const _userSuppliedBottleDataSchema = {
  * Note bahwa tidak ada kolom `relevance` disini karena itu personalized
  */
 const _serverSuppliedBottleDataSchema = {
-  id: Joi.string().required(),
+  id: Joi.string(),
   createdAt: fbTimestampOrJsDateSchema.required(),
   uid: Joi.string().required(),
   likeCount: Joi.number(),

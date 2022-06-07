@@ -17,13 +17,15 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@faker-js/faker": "^7.1.0",
+    "axios": "^0.27.2",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
     "flat": "^5.0.2",
+    "form-data": "^4.0.0",
     "joi": "^17.6.0",
-    "typesense": "^1.2.2",
     "path": "^0.12.7",
-    "@faker-js/faker": "^7.1.0"
+    "typesense": "^1.2.2"
   },
   "devDependencies": {
     "@types/flat": "^5.0.2",

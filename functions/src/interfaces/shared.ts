@@ -7,7 +7,7 @@
  * Unified media storage type, with thumbnail support (Not only images)
  */
 export interface IMedia {
-  kind?: 'image' | 'video';
+  kind?: 'image' | 'video' | 'unknown';
   mediaThumbnailUrl?: string;
   mediaUrl?: string;
 }
