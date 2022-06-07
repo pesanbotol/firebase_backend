@@ -8,6 +8,7 @@ import {onFirestoreTriggerBackfillIndex} from './typesense/backfillToTypesenseFr
 import {onWriteUsersUpdateTypesenseIndex, onWriteBottlesUpdateTypesenseIndex} from './typesense/indexToTypesenseOnFirestoreWrite'
 import * as typesenseCollectionsTrigger from './typesense/collectionSchemas'
 import * as searchsTrigger from './search/search-callable'
+import * as storagesTrigger from './storage/trigger'
 
 admin.initializeApp()
 
@@ -30,3 +31,4 @@ export const typesense = {
 }
 export const seeder = callableSeeder
 export const searchTrigger = searchsTrigger
+export const storageTrigger = storagesTrigger
