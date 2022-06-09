@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import {MissionSchema} from '../schemas/MissionSchema';
-import {MissionCreate} from '../interfaces/Mission';
+import {firestore} from 'firebase-admin';
+// Create polyline using http://apps.headwallphotonics.com/
 
-const _hardcodedMission: MissionCreate[] = [
+const _hardcodedMission = [
   {
     kind: 'geofence',
     description: 'Go to Bali',
@@ -11,7 +11,17 @@ const _hardcodedMission: MissionCreate[] = [
     enable: true,
     id: "goto_bali_mission",
     createdAt: admin.firestore.Timestamp.now(),
-    reward: 'BALI VISITOR'
+    reward: 'BALI VISITOR',
+    geofence: [
+      new firestore.GeoPoint(-8.088588547843363, 114.4158912662579),
+      new firestore.GeoPoint(-7.939001771655168, 114.9487281803204),
+      new firestore.GeoPoint(-8.026040769900154, 115.49529800453915),
+      new firestore.GeoPoint(-8.384877443156084, 115.8825660709454),
+      new firestore.GeoPoint(-8.933360858768053, 115.6903053287579),
+      new firestore.GeoPoint(-8.908940657041887, 115.0256324771954),
+      new firestore.GeoPoint(-8.268019355378232, 114.4158912662579),
+      new firestore.GeoPoint(-8.088588547843363, 114.4158912662579),
+    ]
   }
 ]
 
@@ -27,12 +37,12 @@ export const seedMissions = functions.https.onCall(async (data, ctx) => {
     functions.logger.info(`Seeding mission with id ${it.id}`);
     const {id, ...rest} = it
 
-    const {value, error} = MissionSchema.validate(rest, {stripUnknown: true})
-    if (error) {
-      functions.logger.warn("Seeding mission error", error)
-    } else {
-      await db.collection('missions').doc(it.id).set(value);
-    }
+    // const {value, error} = MissionSchema.validate(rest, {stripUnknown: true})
+    // if (error) {
+    //   functions.logger.warn("Seeding mission error", error)
+    // } else {
+      await db.collection('missions').doc(it.id).set(rest);
+    // }
   }))
 
   functions.logger.info('Selesai seeding mission');
