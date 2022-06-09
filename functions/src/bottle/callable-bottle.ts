@@ -7,6 +7,7 @@ import { typeClient } from '../typesense'
 import * as path from 'path'
 import {unflatten} from '../typesense/utils'
 import {isDepictNudity} from '../ml/nudity'
+import {MissionSchema} from '../schemas/MissionSchema'
 
 /**
  * Create a new bottled message, either image or text
@@ -127,18 +128,18 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
 export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => {
   if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can list message')
 
-  const { error: errorIn, value: dataIn } = IndexByGeocordReqDTOSchema.validate(data)
+  const { error: errorIn } = IndexByGeocordReqDTOSchema.validate(data)
   if (errorIn != null) throw new functions.https.HttpsError('invalid-argument', "Data supplied isn't in the correct shape", errorIn)
 
-  functions.logger.info(dataIn)
+  // functions.logger.info(dataIn)
 
+  //#region "Bottle index"
+  // TODO: Create a root level schema validation, don't validate bottle manually
   const postRes = await typeClient.collections<BottleGetResDTO>('bottles').documents().search({
     q: '',
     query_by: 'contentText'
   })
   const postHit = postRes.hits ?? []
-
-  // TODO: Create a root level schema validation, don't validate bottle manually
   const bottleRes = await Promise.all(postHit.map(async (it) => {
     // FIXME: This shit is really not efficient
     const userData = await (await admin.firestore().collection('users').doc(it.document.uid).get()).data()
@@ -161,13 +162,36 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
       user
     }
   }))
+  //#endregion
+
+  //#region "Mission Index"
+  const missionRes = await typeClient.collections<BottleGetResDTO>('missions').documents().search({
+    q: '',
+    query_by: 'description',
+    filter_by: 'enable:=true'
+  })
+  const missionsHit = missionRes.hits ?? []
+  const missionsRes = await Promise.all(missionsHit.map(async (it) => {
+    const {value, error} = MissionSchema.validate(it.document, {stripUnknown: true})
+    if (error) {
+      functions.logger.warn("Mission index error", error)
+    }
+
+    return {
+      ...value,
+      createdAt: it.document.createdAt
+    }
+  }))
+  //#endregion
+
   const results = {
     bottle: bottleRes,
+    missions: missionsRes,
     trend: [],
     bottleRecommended: []
   }
 
-  console.log('AA', JSON.stringify(results))
+  // console.log('AA', JSON.stringify(results))
 
   return {
     data: results

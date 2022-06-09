@@ -5,7 +5,7 @@ import * as authsTrigger from './auth'
 import * as callableBottle from './bottle/callable-bottle'
 import * as callableSeeder from './seeder/index'
 import {onFirestoreTriggerBackfillIndex} from './typesense/backfillToTypesenseFromFirestore'
-import {onWriteUsersUpdateTypesenseIndex, onWriteBottlesUpdateTypesenseIndex} from './typesense/indexToTypesenseOnFirestoreWrite'
+import {onWriteUsersUpdateTypesenseIndex, onWriteMissionsUpdateTypesenseIndex, onWriteBottlesUpdateTypesenseIndex} from './typesense/indexToTypesenseOnFirestoreWrite'
 import * as typesenseCollectionsTrigger from './typesense/collectionSchemas'
 import * as searchsTrigger from './search/search-callable'
 // import * as storagesTrigger from './storage/trigger'
@@ -26,6 +26,7 @@ export const bottle = {
 export const typesense = {
   onFirestoreTriggerBackfillIndex,
   onWriteUsersUpdateTypesenseIndex,
+  onWriteMissionsUpdateTypesenseIndex,
   onWriteBottlesUpdateTypesenseIndex,
   typesenseCollectionsTrigger
 }
