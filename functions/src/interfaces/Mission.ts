@@ -33,7 +33,7 @@ export interface Mission {
   } | Date;
   geofence?: any[][];
   kind: 'geofence' | 'geofence+picture' | 'geofence+posted' | 'geofence+posted+dated';
-  reward: string[];
+  reward: string;
   /**
    * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
    */
@@ -77,7 +77,7 @@ export interface MissionCreate {
   geofence?: any[][];
   id: string;
   kind: 'geofence' | 'geofence+picture' | 'geofence+posted' | 'geofence+posted+dated';
-  reward: string[];
+  reward: string;
   /**
    * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
    */

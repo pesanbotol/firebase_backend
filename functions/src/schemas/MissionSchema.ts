@@ -12,7 +12,7 @@ const _missionSchemaContent = {
   endAt: fbTimestampOrJsDateSchema,
   createdAt: fbTimestampOrJsDateSchema.required(),
   enable: Joi.bool().required().default(false),
-  reward: Joi.array().items(Joi.string().required()).required(), // Reward kasih badge aja dulu
+  reward: Joi.string().required(), // Reward kasih badge aja dulu
 }
 
 export const MissionCreateSchema = Joi.object({

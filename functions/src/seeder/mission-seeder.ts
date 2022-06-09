@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin'
 import {MissionSchema} from '../schemas/MissionSchema';
 import {MissionCreate} from '../interfaces/Mission';
 
-const _hardcodedMission: Array<MissionCreate> = [
+const _hardcodedMission: MissionCreate[] = [
   {
     kind: 'geofence',
     description: 'Go to Bali',
@@ -11,7 +11,7 @@ const _hardcodedMission: Array<MissionCreate> = [
     enable: true,
     id: "goto_bali_mission",
     createdAt: admin.firestore.Timestamp.now(),
-    reward: ['BALI VISITOR']
+    reward: 'BALI VISITOR'
   }
 ]
 

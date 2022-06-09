@@ -52,7 +52,7 @@ export const typesenseCollections: Record<string, CollectionCreateSchema> = {
       { name: 'createdAt', type: 'int64' },
 
       { name: 'enable', type: 'bool' },
-      { name: 'reward', type: 'string[]' },
+      { name: 'reward', type: 'string' },
     ]
   }
 }
