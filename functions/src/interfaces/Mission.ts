@@ -12,7 +12,7 @@ export interface Mission {
   /**
    * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
    */
-  createdAt?: {
+  createdAt: {
     _nanoseconds?: number;
     _seconds?: number;
   } | {
@@ -46,7 +46,7 @@ export interface Mission {
   } | Date;
 }
 
-export interface MissionCreateSchema {
+export interface MissionCreate {
   _class_id?: number;
   /**
    * Unified typesense, firestore, and client geoposition data type, [lat, lng]
@@ -55,7 +55,7 @@ export interface MissionCreateSchema {
   /**
    * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
    */
-  createdAt?: {
+  createdAt: {
     _nanoseconds?: number;
     _seconds?: number;
   } | {

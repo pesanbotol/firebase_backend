@@ -36,7 +36,24 @@ export const typesenseCollections: Record<string, CollectionCreateSchema> = {
       { name: 'contentImage.mediaThumbnailUrl', type: 'string', optional: true, index: false },
       { name: 'contentImage.mediaUrl', type: 'string', optional: true, index: false },
     ]
-    // 'default_sorting_field': 'ratings_count'
+  },
+  missions: {
+    name: 'missions',
+    fields: [
+      { name: 'kind', type: 'string' },
+      { name: 'geofence', type: 'geopoint[]', optional: true  },
+      { name: 'center', type: 'geopoint' },
+      { name: 'description', type: 'string' },
+
+      { name: '_class_id', type: 'int32', optional: true },
+
+      { name: 'startAt', type: 'int64', optional: true  },
+      { name: 'endAt', type: 'int64', optional: true  },
+      { name: 'createdAt', type: 'int64' },
+
+      { name: 'enable', type: 'bool' },
+      { name: 'reward', type: 'string[]' },
+    ]
   }
 }
 

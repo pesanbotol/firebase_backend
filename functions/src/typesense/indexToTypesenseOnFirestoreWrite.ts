@@ -37,4 +37,7 @@ export const onWriteUsersUpdateTypesenseIndex = functions.firestore.document('us
   .onWrite(_higherOrderIndexer('users'))
 
 export const onWriteBottlesUpdateTypesenseIndex = functions.firestore.document('bottles/{bottleId}')
-  .onWrite(_higherOrderIndexer('bottles'))
+.onWrite(_higherOrderIndexer('bottles'))
+
+export const onWriteMissionsUpdateTypesenseIndex = functions.firestore.document('missions/{missionId}')
+.onWrite(_higherOrderIndexer('missions'))

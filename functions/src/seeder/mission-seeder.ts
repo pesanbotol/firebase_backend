@@ -1,15 +1,15 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import {MissionCreateSchema} from '../interfaces/Mission';
+import {MissionSchema} from '../schemas/MissionSchema';
+import {MissionCreate} from '../interfaces/Mission';
 
-const _hardcodedMission: Array<MissionCreateSchema> = [
+const _hardcodedMission: Array<MissionCreate> = [
   {
     kind: 'geofence',
     description: 'Go to Bali',
     center: [8.4095, 115.1889],
     enable: true,
     id: "goto_bali_mission",
-    _class_id: -1,
     createdAt: admin.firestore.Timestamp.now(),
     reward: ['BALI VISITOR']
   }
@@ -25,7 +25,14 @@ export const seedMissions = functions.https.onCall(async (data, ctx) => {
 
   await Promise.all(_hardcodedMission.map(async (it) => {
     functions.logger.info(`Seeding mission with id ${it.id}`);
-    await db.collection('missions').doc(it.id).set({});
+    const {id, ...rest} = it
+
+    const {value, error} = MissionSchema.validate(rest, {stripUnknown: true})
+    if (error) {
+      functions.logger.warn("Seeding mission error", error)
+    } else {
+      await db.collection('missions').doc(it.id).set(value);
+    }
   }))
 
   functions.logger.info('Selesai seeding mission');
