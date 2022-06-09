@@ -5,13 +5,14 @@ import {firestore} from 'firebase-admin';
 
 const _hardcodedMission = [
   {
-    kind: 'geofence',
+    kind: 'geofence+picture',
     description: 'Go to Bali',
     center: [8.4095, 115.1889],
     enable: true,
     id: "goto_bali_mission",
     createdAt: admin.firestore.Timestamp.now(),
     reward: 'BALI VISITOR',
+    // _class_id: isinya adalah id dari class hasil deteksi model landmark
     geofence: [
       new firestore.GeoPoint(-8.088588547843363, 114.4158912662579),
       new firestore.GeoPoint(-7.939001771655168, 114.9487281803204),
