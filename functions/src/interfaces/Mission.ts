@@ -3,6 +3,8 @@
  * Do not modify this file manually
  */
 
+import { IMedia } from '.';
+
 export interface Mission {
   _class_id?: number;
   /**
@@ -88,4 +90,37 @@ export interface MissionCreate {
     nanoseconds?: number;
     seconds?: number;
   } | Date;
+}
+
+export interface MissionSubmission {
+  _imagePath?: string;
+  /**
+   * Unified typesense, firestore, and client geoposition data type, [lat, lng]
+   */
+  geo?: any[];
+  /**
+   * Unified media storage type, with thumbnail support (Not only images)
+   */
+  image?: IMedia;
+  missionId: string;
+  rewarded: string[];
+  /**
+   * a firebase timestamp (If getting data from firestore) or js date (if creating data to store to firestore)
+   */
+  submittedAt: {
+    _nanoseconds?: number;
+    _seconds?: number;
+  } | {
+    nanoseconds?: number;
+    seconds?: number;
+  } | Date;
+}
+
+export interface MissionSubmitDTO {
+  /**
+   * Unified typesense, firestore, and client geoposition data type, [lat, lng]
+   */
+  geo?: any[];
+  imagePath?: string;
+  missionId: string;
 }
