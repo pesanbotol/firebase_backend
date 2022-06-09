@@ -1,0 +1,16 @@
+{
+  "name": "turf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "node main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@turf/boolean-point-in-polygon": "^6.5.0",
+    "@turf/turf": "^4.6.1"
+  }
+}

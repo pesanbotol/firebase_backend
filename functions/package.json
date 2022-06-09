@@ -17,10 +17,12 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@turf/turf": "^6.5.0",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
     "flat": "^5.0.2",
     "joi": "^17.6.0",
+    "turf-inside": "^3.0.12",
     "typesense": "^1.2.2"
   },
   "devDependencies": {
