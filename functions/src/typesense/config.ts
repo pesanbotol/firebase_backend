@@ -17,7 +17,8 @@ export const typesenseCollections: Record<string, CollectionCreateSchema> = {
     name: 'users',
     fields: [
       { name: 'description', type: 'string', optional: true },
-      { name: 'username', type: 'string' }
+      { name: 'username', type: 'string' },
+      { name: 'displayName', type: 'string', optional: true }
     ]
     // 'default_sorting_field': 'ratings_count'
   },
