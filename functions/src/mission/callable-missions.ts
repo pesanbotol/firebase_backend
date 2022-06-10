@@ -10,9 +10,9 @@ import {IMedia} from '../interfaces';
 import {getLandmarkArray} from '../ml/landmark';
 
 export const submitMission = functions.https.onCall(async (data, ctx) => {
-  // if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can submit mission')
-  // const uid = ctx.auth.uid
-  const uid = "7Ppj332zk9fEn845lqhJtib1fEHL"
+  if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can submit mission')
+  const uid = ctx.auth.uid
+  // const uid = "7Ppj332zk9fEn845lqhJtib1fEHL"
 
   const {error: errorIn, value: dataIn} = MissionSubmitDTOSchema.validate(data)
   if (errorIn != null) throw new functions.https.HttpsError('invalid-argument', "Data supplied isn't in the correct shape", errorIn)
