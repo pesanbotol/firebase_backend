@@ -7,7 +7,7 @@ const _hardcodedMission = [
   {
     kind: 'geofence+picture',
     description: 'Go to Bali',
-    center: [8.4095, 115.1889],
+    center: [-8.4095, 115.1889],
     enable: true,
     id: "goto_bali_mission",
     createdAt: admin.firestore.Timestamp.now(),
