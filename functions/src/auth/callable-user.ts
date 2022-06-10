@@ -2,20 +2,27 @@ import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import { UserProfileSchema, UserUpdateProfileSchema } from '../schemas'
 
-export const myProfile = functions.https.onCall(async (data, ctx) => {
-  if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can see their profile')
+const _getProfileByUid = async (uid: string) => {
   const db = admin.firestore()
 
-  const uid = ctx.auth.uid
   const userProfile = await (await db.collection('users').doc(uid).get()).data()
+  if (!userProfile) return null
+
   const aggregator = await (await db.collection('users').doc(uid).collection('meta').doc('aggregator').get()).data()
   const socials = await (await db.collection('users').doc(uid).collection('meta').doc('socials').get()).data()
+
+  const missions_get = await (await db.collection('users').doc(uid).collection('badges').get())
+  const missions = missions_get.docs.map((it) => it.data())
+
+  const badges = missions.map((it) => it.rewarded[0])
 
   const _tobe = {
     ...userProfile,
     meta: {
       aggregator,
-      socials
+      socials,
+      missions,
+      badges,
     }
   }
 
@@ -23,9 +30,28 @@ export const myProfile = functions.https.onCall(async (data, ctx) => {
   if (error) {
     functions.logger.warn(error)
   }
+  return value
+}
+
+export const myProfile = functions.https.onCall(async (data, ctx) => {
+  if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can see their profile')
+
+  const uid = ctx.auth.uid
+  const profile = await _getProfileByUid(uid)
 
   return {
-    data: value
+    data: profile
+  }
+})
+
+export const profileByUid = functions.https.onCall(async (data, ctx) => {
+  const uid = data.uid
+  if (!uid) throw new functions.https.HttpsError('invalid-argument', 'you need to supply uid')
+  
+  const profile = await _getProfileByUid(uid)
+
+  return {
+    data: profile
   }
 })
 
