@@ -18,5 +18,5 @@ export interface SearchReqDTO {
   page?: number;
   perPage?: number;
   q: string | '' | null;
-  searchKind: 'all' | 'users' | 'bottles';
+  searchKind: 'users' | 'bottles' | 'missions';
 }

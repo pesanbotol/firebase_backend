@@ -21,6 +21,12 @@ export const searchQuery = functions.https.onCall(async (data, ctx) => {
       q: dataIn.q ?? '',
       query_by: 'contentText'
     })
+  } else if (dataIn.searchKind === 'missions') {
+    return await typeClient.collections('missions').documents().search({
+      ...paginationQuery,
+      q: dataIn.q ?? '',
+      query_by: 'description'
+    })
   }
 
   functions.logger.error(dataIn)

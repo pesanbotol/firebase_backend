@@ -4,7 +4,7 @@ import { geoSchema } from './shared'
 
 export const SearchReqDTOSchema = Joi.object<SearchReqDTO>({
   q: Joi.string().allow('', null).required(),
-  searchKind: Joi.string().valid('all', 'users', 'bottles').required(),
+  searchKind: Joi.string().valid('users', 'bottles', 'missions').required(),
   perPage: Joi.number().default(30),
   page: Joi.number().min(1).default(1)
 }).meta({ className: 'SearchReqDTO' })
