@@ -125,6 +125,20 @@ export const createBottle = functions.https.onCall(async (data, ctx) => {
   }
 })
 
+export const bottleById = functions.https.onCall(async (data, ctx) => {
+  const id = data.id
+  if (!id) throw new functions.https.HttpsError('invalid-argument', "you need to supply bottle's id")
+  const _bottles = await admin.firestore().collection('bottles').get()
+  return _bottles.docs.map((it) => it.data())
+})
+
+export const bottlesByUserUid = functions.https.onCall(async (data, ctx) => {
+  const uid = data.uid
+  if (!uid) throw new functions.https.HttpsError('invalid-argument', "you need to supply user's uid")
+  const _bottles = await admin.firestore().collection('bottles').where("uid", "==", uid).get()
+  return _bottles.docs.map((it) => it.data())
+})
+
 export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => {
   if (ctx.auth == null) throw new functions.https.HttpsError('unauthenticated', 'only authenticated user can list message')
 
