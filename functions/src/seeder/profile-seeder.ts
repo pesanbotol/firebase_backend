@@ -35,12 +35,13 @@ export const seedProfile = functions.https.onCall(async (data, ctx) => {
       displayName: faker.name.firstName() + " " + faker.name.lastName()
     })
 
-    const createPostNum = Math.floor(Math.random() * 5)
+    const createPostNum = Math.floor(Math.random() * 2)
     for (let i = 0; i < createPostNum; i++) {
       await db.collection('bottles').add({
         kind: "text",
         contentText: faker.lorem.words(6),
         createdAt: faker.date.between(new Date(2022, 5, 11, 0, 0, 0), new Date(2022, 5, 13, 0, 0, 0)),
+        uid: user.uid,
         geo: [
           getRandomFloat(6.0, -11.0, 6),
           getRandomFloat(95.0, 141, 6),
