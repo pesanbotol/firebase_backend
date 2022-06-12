@@ -48,7 +48,7 @@ export const submitMission = functions.https.onCall(async (data, ctx) => {
     ])
   }
 
-  console.log({mission, turfGeofence, turfUserCord});
+  // console.log({mission, turfGeofence, turfUserCord});
 
   if (mission.kind == 'geofence') {
     if (!turfUserCord && !turfGeofence) {
