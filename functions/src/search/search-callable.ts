@@ -13,7 +13,7 @@ export const searchQuery = functions.https.onCall(async (data, ctx) => {
     return await typeClient.collections('users').documents().search({
       ...paginationQuery,
       q: dataIn.q ?? '',
-      query_by: 'description,username'
+      query_by: 'description,username,displayName'
     })
   } else if (dataIn.searchKind === 'bottles') {
     return await typeClient.collections('bottles').documents().search({
