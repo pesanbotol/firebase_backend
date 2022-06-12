@@ -17,18 +17,9 @@ export const seedProfile = functions.https.onCall(async (data, ctx) => {
   functions.logger.info('Mulai seeding user profile');
 
   for (let i = 0; i < 20; i++) {
-    // const user: UserCreateProfile = {
-    //   registeredAt: new Date(),
-    //   description: faker.random.words(5),
-    //   username: faker.random.words(1),
-    //   displayName: faker.random.words(2),
-    // }
     const email = faker.internet.email()
     const password = "password"
 
-    // const {error, value} = UserProfileSchema.validate(user);
-    // if (error == null) {
-    // db.collection('users').add(value);
     const user = await admin.auth().createUser({email, password})
     db.collection("users").doc(user.uid).set({
       username: faker.internet.userName(),
@@ -48,7 +39,6 @@ export const seedProfile = functions.https.onCall(async (data, ctx) => {
         ]
       })
     }
-    // }
   }
 
   functions.logger.info('Selesai seeding user profile');
