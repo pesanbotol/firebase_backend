@@ -186,7 +186,7 @@ export const indexBottleByGeocord = functions.https.onCall(async (data, ctx) => 
   })
   const missionsHit = missionRes.hits ?? []
   const missionsRes = await Promise.all(missionsHit.map(async (it) => {
-    const {value, error} = MissionSchema.validate(it.document, {stripUnknown: true})
+    const {value, error} = MissionSchema.validate(it.document)
     if (error) {
       functions.logger.warn("Mission index error", error)
     }
