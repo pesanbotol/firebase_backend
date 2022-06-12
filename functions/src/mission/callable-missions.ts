@@ -64,4 +64,5 @@ export const submitMission = functions.https.onCall(async (data, ctx) => {
     functions.logger.error("Mission isn't supported", mission)
     throw new functions.https.HttpsError('internal', "This mission is invalid", mission)
   }
+  return;
 });
