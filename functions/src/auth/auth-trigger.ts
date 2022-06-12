@@ -40,7 +40,7 @@ export const createProfile = functions.auth.user().onCreate(async (user) => {
 
   const newProfile: UserCreateProfile = {
     registeredAt: currentTime,
-    description: 'halo',
+    description: '',
     username: proposalUid,
     displayName: _displayName,
   }
