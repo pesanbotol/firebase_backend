@@ -131,4 +131,5 @@ export const submitMission = functions.https.onCall(async (data, ctx) => {
   } else {
     throw new functions.https.HttpsError('cancelled', "mission not fulfilled")
   }
+  return
 });
